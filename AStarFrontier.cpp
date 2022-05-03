@@ -1,6 +1,14 @@
 #include "AStarFrontier.h"
 
 template <class T>
+AStarFrontier<T>::AStarFrontier(Pair<T>* dest, int rows, int colums) {
+    this->rows = 6;
+    this->colums = 10;
+    this->destination = new Pair<T>(0, 8);
+    this->fillhBoard();
+}
+
+template <class T>
 void AStarFrontier<T>::add(Node<Pair<T>>* node) {
     if (node->parent) node->steps += node->parent->steps;
     StackFrontier<T>::frontier->push_back(node);

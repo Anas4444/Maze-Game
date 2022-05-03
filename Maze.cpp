@@ -65,7 +65,7 @@ bool Maze::inExplored(Pair<int> pair) {
 }
 
 void Maze::solve() {
-    f = new AStarFrontier<int>();
+    f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
     f->add(new Node<Pair<int>>(*node));
     while(node->getData()!=destination && !f->empty()) {
