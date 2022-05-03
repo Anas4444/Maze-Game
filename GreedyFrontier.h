@@ -1,10 +1,10 @@
 #pragma once
-#include "StackFrontier.cpp"
+#include "QueueFrontier.cpp"
 #include <tuple>
 #include <cmath>
 
 template <class T>
-class GreedyFrontier : public StackFrontier<T> {
+class GreedyFrontier : public QueueFrontier<T> {
     protected:
         Pair<T>* destination;
         int rows;

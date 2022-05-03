@@ -6,12 +6,13 @@
 class Maze {
     private:
         int** blocks;
-        AStarFrontier<int>* f;
+        StackFrontier<int>* f;
         Pair<int> dimensions;
         Pair<int> destination;
         Node<Pair<int>>* position;
         std::vector<Node<Pair<int>>*> solution;
-        std::vector<Node<Pair<int>>*> explored;
+        std::vector<Node<Pair<int>>*> allPaths;
+        //std::vector<Node<Pair<int>>*> explored;
 
     public:
         Maze();
@@ -19,7 +20,8 @@ class Maze {
         void print();
         bool inExplored(Pair<int> pair);
         std::vector<Node<Pair<int>>*> neighbours(Node<Pair<int>>* location);
-        void solve();
+        void shortestPath();
+        void solveAll(int w);
 };
 
 /*int main() {
