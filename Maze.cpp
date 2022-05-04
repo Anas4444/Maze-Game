@@ -69,7 +69,7 @@ bool Maze::inAlphaExplored(Pair<int> pair) {
     return this->blocks[pair.x][pair.y]>3;
 }
 
-void Maze::drawAlphaPath(int alpha) {
+void Maze::drawPath(int alpha=1) {
     if (this->allPaths.size()>alpha-1) {
         for (int i=0; i<this->allPaths[alpha-1].size(); i++) {
             Pair<int> pos = this->allPaths[alpha-1][i]->getData();
@@ -80,6 +80,7 @@ void Maze::drawAlphaPath(int alpha) {
 
 void Maze::shortestPath() {
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
+    std::vector<Node<Pair<int>>*> path;
     f->printHBoard();
     Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
     f->add(new Node<Pair<int>>(*node));
@@ -101,16 +102,11 @@ void Maze::shortestPath() {
     Node<Pair<int>>* p = node;
     while (p != nullptr) {
         Pair<int> pos = p->getData();
-        this->blocks[pos.x][pos.y]=-2;
-        this->solution.push_back(new Node<Pair<int>>(*p));
+        path.push_back(new Node<Pair<int>>(*p));
         p = p->parent;
     }
-    std::reverse(this->solution.begin(), this->solution.end());
-    for (int i=0; i<this->solution.size(); i++) {
-        Pair<int> p = this->solution[i]->getData();
-        //this->solution[i]->printOne();
-        //std::cout << "distance : " << f->distance(p) << std::endl;
-    }
+    std::reverse(path.begin(), path.end());
+    this->allPaths.push_back(path);
 }
 
 void Maze::solveAll(int w) {
