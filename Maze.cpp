@@ -65,10 +65,22 @@ bool Maze::inExplored(Pair<int> pair) {
     return false;*/
 }
 
+bool Maze::inAlphaExplored(Pair<int> pair) {
+    return this->blocks[pair.x][pair.y]>3;
+}
+
+void Maze::drawAlphaPath(int alpha) {
+    if (this->allPaths.size()>alpha-1) {
+        for (int i=0; i<this->allPaths[alpha-1].size(); i++) {
+            Pair<int> pos = this->allPaths[alpha-1][i]->getData();
+            this->blocks[pos.x][pos.y]=-2;
+        }
+    }
+}
+
 void Maze::shortestPath() {
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     f->printHBoard();
-    //f = new QueueFrontier<int>();
     Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
     f->add(new Node<Pair<int>>(*node));
     while(node->getData()!=destination && !f->empty()) {
@@ -130,12 +142,12 @@ void Maze::solveAll(int w) {
         }
         std::vector<Node<Pair<int>>*> neighb = neighbours(node);
         for (int i=0; i<neighb.size(); i++) {
-            if (!inExplored(neighb[i]->getData()))
+            /*if (!inExplored(neighb[i]->getData()))
+                f->add(new Node<Pair<int>>(*neighb[i]));*/
+            if (!inAlphaExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i]))
                 f->add(new Node<Pair<int>>(*neighb[i]));
-            /*if (!inExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i]))
-                f->add(new Node<Pair<int>>(*neighb[i]));
-            else if (!inExplored(neighb[i]->getData()) && neighb[i]->getData()!=this->destination)
-                f->replace(neighb[i]);*/
+            else if (!inAlphaExplored(neighb[i]->getData()) && neighb[i]->getData()!=this->destination)
+                f->replace(neighb[i]);
         }
     }
 
@@ -146,18 +158,9 @@ void Maze::solveAll(int w) {
         while (p != nullptr) {
             Pair<int> pos = p->getData();
             path.push_back(p);
-            this->blocks[pos.x][pos.y]=-2;
             p = p->parent;
         }
         std::reverse(path.begin(), path.end());
         this->allPaths.push_back(path);
     }
-
-    /*for (int i=0; i<this->allPaths.size(); i++) {
-        for (int j=0; j<this->allPaths[i].size(); j++) {
-            this->allPaths[i][j]->printOne();
-            std::cout << "\n";
-        }
-        std::cout << "\n";
-    }*/
 }

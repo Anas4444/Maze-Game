@@ -19,6 +19,8 @@ class Maze {
         Maze(std::string path);
         void print();
         bool inExplored(Pair<int> pair);
+        bool inAlphaExplored(Pair<int> pair);
+        void drawAlphaPath(int i);
         std::vector<Node<Pair<int>>*> neighbours(Node<Pair<int>>* location);
         void shortestPath();
         void solveAll(int w);
