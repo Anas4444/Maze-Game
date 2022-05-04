@@ -24,6 +24,13 @@ void AStarFrontier<T>::add(Node<Pair<T>>* node) {
     StackFrontier<T>::frontier->push_back(node);
 }
 
+template <class T>
+void AStarFrontier<T>::replace(Node<Pair<T>>* node) {
+    StackFrontier<T>::del(node);
+    if (node->parent) node->steps += node->parent->steps + 1;
+    StackFrontier<T>::frontier->push_back(node);
+}
+
 template <class T> 
 Node<Pair<T>>* AStarFrontier<T>::remove() {
     Node<Pair<T>>* p = new Node<Pair<T>>(*(StackFrontier<T>::frontier->at(0)));

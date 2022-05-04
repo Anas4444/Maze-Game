@@ -12,7 +12,7 @@ class StackFrontier {
         virtual void add(Node<Pair<T>>* node);
         bool empty();
         bool inFrontier(Node<Pair<T>>* node);
-        void replaceNode(Node<Pair<T>>* node);
+        virtual void replace(Node<Pair<T>>* node);
         Node<Pair<T>>* getNode(Node<Pair<T>>* node);
         virtual Node<Pair<T>>* remove();
         void del(Node<Pair<T>>* node);

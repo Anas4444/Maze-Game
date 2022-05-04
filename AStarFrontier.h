@@ -10,5 +10,6 @@ class AStarFrontier : public GreedyFrontier<T> {
         void setPriority(bool d);
         bool getPriority();
         void add(Node<Pair<T>>* node);
+        void replace(Node<Pair<T>>* node);
         Node<Pair<T>>* remove();
 };

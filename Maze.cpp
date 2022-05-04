@@ -130,10 +130,12 @@ void Maze::solveAll(int w) {
         }
         std::vector<Node<Pair<int>>*> neighb = neighbours(node);
         for (int i=0; i<neighb.size(); i++) {
-            if (!inExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i]))
+            if (!inExplored(neighb[i]->getData()))
                 f->add(new Node<Pair<int>>(*neighb[i]));
-            /*else if (!inExplored(neighb[i]->getData()) && neighb[i]->getData()!=this->destination)
-                f->replaceNode(neighb[i]);*/
+            /*if (!inExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i]))
+                f->add(new Node<Pair<int>>(*neighb[i]));
+            else if (!inExplored(neighb[i]->getData()) && neighb[i]->getData()!=this->destination)
+                f->replace(neighb[i]);*/
         }
     }
 

@@ -39,7 +39,7 @@ void StackFrontier<T>::del(Node<Pair<T>>* node) {
 }
 
 template <class T>
-void StackFrontier<T>::replaceNode(Node<Pair<T>>* node) {
+void StackFrontier<T>::replace(Node<Pair<T>>* node) {
     del(node);
     this->frontier->push_back(node);
 }
