@@ -29,6 +29,29 @@ Node<Pair<T>>* StackFrontier<T>::remove() {
 }
 
 template <class T>
+void StackFrontier<T>::del(Node<Pair<T>>* node) {
+    for (int i=0; i<frontier->size(); i++) {
+        if (node->getData()==frontier->at(i)->getData()) {
+            frontier->erase(frontier->begin()+i);
+            break;
+        }
+    }
+}
+
+template <class T>
+void StackFrontier<T>::replaceNode(Node<Pair<T>>* node) {
+    del(node);
+    this->frontier->push_back(node);
+}
+
+template <class T>
+Node<Pair<T>>* StackFrontier<T>::getNode(Node<Pair<T>>* node) {
+    for (int i=0; i<this->frontier->size(); i++) {
+        if (this->frontier->at(i)->getData()==node->getData()) return this->frontier->at(i);
+    }
+}
+
+template <class T>
 bool StackFrontier<T>::inFrontier(Node<Pair<T>>* node) {
     for (int i=0; i<this->frontier->size(); i++) {
         if (node->getData()==this->frontier->at(i)->getData()) return true;

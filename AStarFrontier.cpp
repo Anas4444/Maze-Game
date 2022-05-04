@@ -9,6 +9,16 @@ AStarFrontier<T>::AStarFrontier(Pair<T>* dest, int rows, int colums) {
 }
 
 template <class T>
+void AStarFrontier<T>::setPriority(bool d) {
+    this->distance = d;
+}
+
+template <class T>
+bool AStarFrontier<T>::getPriority() {
+    return this->distance;
+}
+
+template <class T>
 void AStarFrontier<T>::add(Node<Pair<T>>* node) {
     if (node->parent) node->steps += node->parent->steps + 1;
     StackFrontier<T>::frontier->push_back(node);
@@ -25,6 +35,19 @@ Node<Pair<T>>* AStarFrontier<T>::remove() {
         if (GreedyFrontier<T>::hBoard[Pxy.x][Pxy.y]+p->getSteps() > GreedyFrontier<T>::hBoard[xy.x][xy.y]+Bxy->getSteps()) {
             p->setNode(*Bxy);
             f = i;
+        }
+        else if (GreedyFrontier<T>::hBoard[Pxy.x][Pxy.y]+p->getSteps() == GreedyFrontier<T>::hBoard[xy.x][xy.y]+Bxy->getSteps()) {
+            if (this->distance)
+                if (p->getSteps() > Bxy->getSteps()) {
+                    p->setNode(*Bxy);
+                    f = i;
+                }
+            else {
+                if (GreedyFrontier<T>::hBoard[Pxy.x][Pxy.y] > GreedyFrontier<T>::hBoard[xy.x][xy.y]) {
+                    p->setNode(*Bxy);
+                    f = i;
+                }
+            }
         }
     }
     StackFrontier<T>::frontier->erase(StackFrontier<T>::frontier->begin()+f);
