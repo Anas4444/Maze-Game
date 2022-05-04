@@ -102,32 +102,36 @@ void Maze::shortestPath() {
 }
 
 void Maze::solveAll(int w) {
-    //f = new StackFrontier<int>();
     std::vector<Node<Pair<int>>*> allNodes;
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
     f->add(new Node<Pair<int>>(*node));
     int k=0;
     while(!f->empty() && k<w) {
+        f->printOne();
         node = f->remove();
+        std::cout << "Best One : ";
+        node->printOne();
+        std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
         if (node->getData()==destination) {
             k++;
             allNodes.push_back(new Node<Pair<int>>(*node));
+            std::cout << k <<" Explored\n";
         }
-        Pair<int> pos = node->getData();
-        this->blocks[pos.x][pos.y]++;
-        //this->explored.push_back(new Node<Pair<int>>(*node));
+        else {
+            Pair<int> pos = node->getData();
+            this->blocks[pos.x][pos.y]++;
+        }
         std::vector<Node<Pair<int>>*> neighb = neighbours(node);
         for (int i=0; i<neighb.size(); i++) {
             if (!inExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i]))
                 f->add(new Node<Pair<int>>(*neighb[i]));
         }
     }
-    //f->print();
+
     std::cout << allNodes.size() << std::endl;
     for (int i=0; i<allNodes.size(); i++) {
         std::vector<Node<Pair<int>>*> path;
-        //if (i==1) break;
         Node<Pair<int>>* p = allNodes[i];
         while (p != nullptr) {
             Pair<int> pos = p->getData();
@@ -139,10 +143,11 @@ void Maze::solveAll(int w) {
         this->allPaths.push_back(path);
     }
 
-    for (int i=0; i<this->allPaths.size(); i++) {
+    /*for (int i=0; i<this->allPaths.size(); i++) {
         for (int j=0; j<this->allPaths[i].size(); j++) {
             this->allPaths[i][j]->printOne();
+            std::cout << "\n";
         }
         std::cout << "\n";
-    }
+    }*/
 }
