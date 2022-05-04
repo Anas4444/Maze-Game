@@ -59,10 +59,6 @@ std::vector<Node<Pair<int>>*> Maze::neighbours(Node<Pair<int>>* location) {
 
 bool Maze::inExplored(Pair<int> pair) {
     return this->blocks[pair.x][pair.y]>0;
-    /*for (int i=0; i<this->explored.size(); i++) {
-        if (pair==this->explored[i]->getData()) return true;
-    }
-    return false;*/
 }
 
 bool Maze::inAlphaExplored(Pair<int> pair) {
@@ -92,7 +88,6 @@ void Maze::shortestPath() {
         std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
         Pair<int> pos = node->getData();
         this->blocks[pos.x][pos.y]++;
-        //this->explored.push_back(new Node<Pair<int>>(*node));
         std::vector<Node<Pair<int>>*> neighb = neighbours(node);
         for (int i=0; i<neighb.size(); i++) {
             if (!inExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i])) 
