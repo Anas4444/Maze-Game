@@ -9,13 +9,13 @@ AStarFrontier<T>::AStarFrontier(Pair<T>* dest, int rows, int colums) {
 }
 
 template <class T>
-void AStarFrontier<T>::setPriority(bool d) {
-    this->distance = d;
+void AStarFrontier<T>::setPriority(bool priority) {
+    this->priorityD = priority;
 }
 
 template <class T>
 bool AStarFrontier<T>::getPriority() {
-    return this->distance;
+    return this->priorityD;
 }
 
 template <class T>
@@ -44,7 +44,7 @@ Node<Pair<T>>* AStarFrontier<T>::remove() {
             f = i;
         }
         else if (GreedyFrontier<T>::hBoard[Pxy.x][Pxy.y]+p->getSteps() == GreedyFrontier<T>::hBoard[xy.x][xy.y]+Bxy->getSteps()) {
-            if (this->distance)
+            if (this->priorityD)
                 if (p->getSteps() > Bxy->getSteps()) {
                     p->setNode(*Bxy);
                     f = i;
