@@ -22,7 +22,7 @@ class Maze {
         void drawPath(int i);
         std::vector<Node<Pair<int>>*> neighbours(Node<Pair<int>>* location);
         void shortestPath();
-        void solveAll(int w);
+        void alphaShortestPath(int w);
 };
 
 /*int main() {

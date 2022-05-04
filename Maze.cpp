@@ -109,7 +109,7 @@ void Maze::shortestPath() {
     this->allPaths.push_back(path);
 }
 
-void Maze::solveAll(int w) {
+void Maze::alphaShortestPath(int w) {
     std::vector<Node<Pair<int>>*> allNodes;
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
