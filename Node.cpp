@@ -4,21 +4,21 @@ template <class T>
 Node<T>::Node() {
     this->data = Pair<int>();
     this->parent = nullptr;
-    this->steps = 1;
+    this->steps = 0;
 }
 
 template <class T>
 Node<T>::Node(T d) {
     this->data = d;
     this->parent = nullptr;
-    this->steps = 1;
+    this->steps = 0;
 }
 
 template <class T>
 Node<T>::Node(T d, Node<T>* p) {
     this->data = d;
     this->parent = p;
-    this->steps = 1;
+    this->steps = 0;
 }
 
 template <class T>
@@ -76,5 +76,5 @@ void Node<T>::print() {
 
 template<class T>
 void Node<T>::printOne() {
-    std::cout << this->data << " steps : " << this->steps << std::endl;
+    std::cout << this->data << " steps : " << this->steps;
 }

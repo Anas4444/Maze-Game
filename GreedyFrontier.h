@@ -16,6 +16,7 @@ class GreedyFrontier : public QueueFrontier<T> {
         ~GreedyFrontier();
         int heuricity(int Ax, int Ay, Pair<T>* B);
         void fillhBoard();
+        void printHBoard();
         int distance(Pair<T> p);
         Node<Pair<T>>* remove();
 };

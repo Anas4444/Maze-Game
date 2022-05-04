@@ -29,6 +29,29 @@ Node<Pair<T>>* StackFrontier<T>::remove() {
 }
 
 template <class T>
+bool StackFrontier<T>::inFrontier(Node<Pair<T>>* node) {
+    for (int i=0; i<this->frontier->size(); i++) {
+        if (node->getData()==this->frontier->at(i)->getData()) return true;
+    }
+    return false;
+}
+
+template <class T>
+int StackFrontier<T>::distance(Pair<T> p) { return 0; }
+
+template <class T>
+void StackFrontier<T>::printHBoard() {}
+
+template <class T>
 void StackFrontier<T>::print() {
     for (int i=0; i<frontier->size(); i++) frontier->at(i)->print();
+}
+
+template <class T>
+void StackFrontier<T>::printOne() {
+    for (int i=0; i<frontier->size(); i++) {
+        frontier->at(i)->printOne();
+        std::cout << " | distance : " << distance(frontier->at(i)->getData()) << std::endl;
+    }
+    std::cout << "\n";
 }

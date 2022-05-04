@@ -36,6 +36,16 @@ void GreedyFrontier<T>::fillhBoard() {
 }
 
 template <class T>
+void GreedyFrontier<T>::printHBoard() {
+    for (int i=0; i<rows; i++) {
+        for (int j=0; j<colums; j++) {
+            std::cout << hBoard[i][j];
+        }
+        std::cout << "\n";
+    }
+}
+
+template <class T>
 int GreedyFrontier<T>::distance(Pair<T> p) {
     return this->hBoard[p.x][p.y];
 }

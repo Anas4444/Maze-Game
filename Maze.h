@@ -11,7 +11,7 @@ class Maze {
         Pair<int> destination;
         Node<Pair<int>>* position;
         std::vector<Node<Pair<int>>*> solution;
-        std::vector<Node<Pair<int>>*> allPaths;
+        std::vector<std::vector<Node<Pair<int>>*>> allPaths;
         //std::vector<Node<Pair<int>>*> explored;
 
     public:
