@@ -84,6 +84,8 @@ bool Maze::inExplored(Pair<int> pair) {
 bool Maze::isExplored(Node<Pair<int>>* node) {
     for (int i=0; i<this->explored.size(); i++) {
         if (this->explored[i]->equals(node)) return true; 
+        else if (this->explored[i]->parent && node->parent) 
+            if (this->explored[i]->parent->getData()==node->getData() && this->explored[i]->equals(node->parent)) return true;
     }
     return false;
 }
