@@ -92,3 +92,8 @@ bool Node<T>::equals(Node<T>* node) {
         return 1;
     return 0;
 }
+
+template <class T>
+int Node<T>::operator==(Node<T> const &m) const { 
+    return (data==m.data);
+}

@@ -20,6 +20,7 @@ class Maze {
         void showAll(int weight);
         void explore();
         void zero();
+        bool isDuplicate(Node<Pair<int>>* node);
         bool inExplored(Pair<int> pair);
         bool isExplored(Node<Pair<int>>* node);
         void drawPath(int i);
