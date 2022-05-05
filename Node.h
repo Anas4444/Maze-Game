@@ -19,4 +19,7 @@ struct Node {
         int getSteps();
         void print();
         void printOne();
+        int operator==(Node<T> const &m) const;
+        int operator!=(Node<T> const &m) const;
+        bool equals(Node<T>* node);
 };

@@ -78,3 +78,17 @@ template<class T>
 void Node<T>::printOne() {
     std::cout << this->data << " steps : " << this->steps;
 }
+
+template <class T>
+bool Node<T>::equals(Node<T>* node) {
+    Node<T>* p1 = this;
+    Node<T>* p2 = node;
+    while (p1!=nullptr && p2!=nullptr) {
+        if (p1->getData()!=p2->getData()) return 0;
+        p1 = p1->parent;
+        p2 = p2->parent;
+    }
+    if (p1==p2)
+        return 1;
+    return 0;
+}

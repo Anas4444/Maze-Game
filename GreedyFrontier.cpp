@@ -43,6 +43,7 @@ void GreedyFrontier<T>::printHBoard() {
         }
         std::cout << "\n";
     }
+    std::cout << "\n";
 }
 
 template <class T>
