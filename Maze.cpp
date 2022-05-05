@@ -221,9 +221,9 @@ void Maze::alphaShortestPath(int w = 1) {
         node->printOne();
         std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
         while (node->getData()==destination && k<w) {
-            bool duplicate = isDuplicate(node);
-            std::cout << duplicate << std::endl;
-            if (!isExplored(node) && !duplicate) {
+            /*bool duplicate = isDuplicate(node);
+            std::cout << duplicate << std::endl;*/
+            if (!isExplored(node)) {
                 std::vector<Node<Pair<int>>*> path;
                 Node<Pair<int>>* p = node;
                 while (p != nullptr) {
