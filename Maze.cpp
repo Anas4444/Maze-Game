@@ -189,16 +189,16 @@ void Maze::alphaShortestPath(int w = 1) {
     Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
     f->add(new Node<Pair<int>>(*node));
     int k=0;
-    if (w<=0) k = w-1;
-    while(!f->empty() && k<w) {
+    int d=0;
+    while(!f->empty() && (k<w || w<=0) && d<10) {
         //f->printOne();
         node = f->remove();
         //std::cout << "Best One : ";
         //node->printOne();
         //std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
-        while (node->getData()==destination && k<w) {
-            node->print();
-            if (!isExplored(node) && !isDuplicate(node)) {
+        while (node->getData()==destination && (k<w || w<=0)) {
+            if (!isDuplicate(node)) {
+                node->print();
                 std::vector<Node<Pair<int>>*> path;
                 Node<Pair<int>>* p = node;
                 while (p != nullptr) {
@@ -208,13 +208,13 @@ void Maze::alphaShortestPath(int w = 1) {
                 
                 std::reverse(path.begin(), path.end());
                 this->allPaths.push_back(path);
-                if (w>0)
-                    k++;
+                k++;
 
                 Pair<int> pos = node->getData();
                 this->blocks[pos.x][pos.y]++;
                 this->explored.push_back(new Node<Pair<int>>(*node));
             }
+            else d++;
             std::cout << k <<" Explored\n\n";
             //f->printOne();
             node = f->remove();
