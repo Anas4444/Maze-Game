@@ -83,70 +83,27 @@ bool Maze::inExplored(Pair<int> pair) {
 
 bool Maze::isExplored(Node<Pair<int>>* node) {
     for (int i=0; i<this->explored.size(); i++) {
-        if (this->explored[i]->equals(node)) return true; 
-        else if (this->explored[i]->parent && node->parent) 
+        if (this->explored[i]->parent && node->parent) 
             if (this->explored[i]->parent->getData()==node->getData() && this->explored[i]->equals(node->parent)) return true;
     }
     return false;
 }
 
 bool Maze::isDuplicate(Node<Pair<int>>* node) {
-    int n = this->allPaths.size();
-    if (n==0) return false;
     Node<Pair<int>>* p = node;
-    std::vector<Node<Pair<int>>*> solution;
+    std::vector<Node<Pair<int>>*> path;
     while (p != nullptr) {
         Pair<int> pos = p->getData();
-        this->blocks[pos.x][pos.y] = -2;
-        solution.push_back(new Node<Pair<int>>(*p));
+        path.push_back(new Node<Pair<int>>(*p));
         p = p->parent;
     }
-    print();
-    bool b = false;
-    int m = solution.size();
+    int n = path.size();
     for (int i=0; i<n; i++) {
-        int p = this->allPaths[i].size();
-        std::vector<Node<Pair<int>>*> path;
-        for (int t=0; t<p; t++) {
-            path.push_back(new Node<Pair<int>>(*this->allPaths[i][t]));
-        }
-        path.erase(std::unique(path.begin(), path.end()), path.end());
-        p = path.size();
-        b = false;
-        if (p!=m) continue;
-        for (int k=0; k<m; k++) {
-            for (int j=0; j<p; j++) {
-                if (solution[k]==this->allPaths[i][j]) {
-                    b = true;
-                }
-                else b = false;
-            }
-            if (b == true) return b;
+        for (int j=0; j<n; j++) {
+            if (path[i]->getData()==path[j]->getData() && i!=j) return true;
         }
     }
-    p = node;
-    while (p != nullptr) {
-        Pair<int> pos = p->getData();
-        this->blocks[pos.x][pos.y] = 0;
-        p = p->parent;
-    }
-    solution.clear();
-    return b;
-    /*for (int i=0; i<n; i++) {
-        int m = solution.size();
-        for (int j=0; j<m; j++) {
-            if (std::find(this->allPaths[i].begin(), this->allPaths[i].end(), solution[j])!=this->allPaths[i].end()) b = true;
-            else {
-                b = false;
-                break;
-            }
-        }
-        if (b == true) {
-            solution.clear();
-            return true;
-        }
-    }*/
-    //return false;
+    return false;
 }
 
 void Maze::zero() {
@@ -154,6 +111,15 @@ void Maze::zero() {
         for (int j=0; j<this->dimensions.y; j++) {
             if (this->blocks[i][j]==-2) this->blocks[i][j]=0;
         }
+    }
+}
+
+void Maze::zero(Node<Pair<int>>* node) {
+    Node<Pair<int>>* p = node;
+    while (p != nullptr) {
+        Pair<int> pos = p->getData();
+        this->blocks[pos.x][pos.y] = 0;
+        p = p->parent;
     }
 }
 
@@ -174,6 +140,15 @@ void Maze::draw() {
         }
     }
 }
+
+void Maze::draw(Node<Pair<int>>* node) {
+    Node<Pair<int>>* p = node;
+    while (p != nullptr) {
+        Pair<int> pos = p->getData();
+        this->blocks[pos.x][pos.y] = -2;
+        p = p->parent;
+    }
+} 
 
 void Maze::shortestPath() {
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
@@ -214,16 +189,16 @@ void Maze::alphaShortestPath(int w = 1) {
     Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
     f->add(new Node<Pair<int>>(*node));
     int k=0;
+    if (w<=0) k = w-1;
     while(!f->empty() && k<w) {
-        f->printOne();
+        //f->printOne();
         node = f->remove();
-        std::cout << "Best One : ";
-        node->printOne();
-        std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
+        //std::cout << "Best One : ";
+        //node->printOne();
+        //std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
         while (node->getData()==destination && k<w) {
-            /*bool duplicate = isDuplicate(node);
-            std::cout << duplicate << std::endl;*/
-            if (!isExplored(node)) {
+            node->print();
+            if (!isExplored(node) && !isDuplicate(node)) {
                 std::vector<Node<Pair<int>>*> path;
                 Node<Pair<int>>* p = node;
                 while (p != nullptr) {
@@ -233,18 +208,19 @@ void Maze::alphaShortestPath(int w = 1) {
                 
                 std::reverse(path.begin(), path.end());
                 this->allPaths.push_back(path);
-                k++;
+                if (w>0)
+                    k++;
 
                 Pair<int> pos = node->getData();
                 this->blocks[pos.x][pos.y]++;
                 this->explored.push_back(new Node<Pair<int>>(*node));
             }
             std::cout << k <<" Explored\n\n";
-            f->printOne();
+            //f->printOne();
             node = f->remove();
-            std::cout << "Best One : ";
-            node->printOne();
-            std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
+            //std::cout << "Best One : ";
+            //node->printOne();
+            //std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
         }
         Pair<int> pos = node->getData();
         this->blocks[pos.x][pos.y]++;
@@ -256,4 +232,6 @@ void Maze::alphaShortestPath(int w = 1) {
                 f->add(new Node<Pair<int>>(*neighb[i]));
         }
     }
+    if (this->weight>this->allPaths.size() || this->weight<=0)
+        this->weight = this->allPaths.size();
 }
