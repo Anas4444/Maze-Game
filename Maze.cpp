@@ -208,13 +208,14 @@ void Maze::alphaShortestPath(int w = 0) {
                 
                 std::reverse(path.begin(), path.end());
                 this->allPaths.push_back(path);
+                d = 0;
                 k++;
 
                 Pair<int> pos = node->getData();
                 this->blocks[pos.x][pos.y]++;
                 this->explored.push_back(new Node<Pair<int>>(*node));
             }
-            else d++;
+            d++;
             std::cout << k <<" Explored\n\n";
             //f->printOne();
             node = f->remove();
