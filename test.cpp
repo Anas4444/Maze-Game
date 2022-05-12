@@ -3,7 +3,8 @@
 int main() {
     Maze m("Maze/maze1.txt");
     m.print();
-    m.alphaShortestPath();
+    //m.alphaShortestPath();
     //m.shortestPath();
+    m.searchAll();
     m.showAll();
 }

@@ -23,6 +23,14 @@ struct Pair {
     int operator!=(Pair<S> const &m) const { 
         return (x!=m.x || y!=m.y);
     }
+
+    int operator<=(Pair<S> const &m) const {
+        return (x<=m.x && y<=m.y);
+    }
+
+    int operator>=(Pair<S> const &m) const {
+        return (x>=m.x && y>=m.y);
+    }
 };
 
 template <class S>

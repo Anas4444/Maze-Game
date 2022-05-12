@@ -236,3 +236,61 @@ void Maze::alphaShortestPath(int w = 0) {
     if (this->weight>this->allPaths.size() || this->weight<=0)
         this->weight = this->allPaths.size();
 }
+
+bool Maze::allChecked() {
+    for (int i=0; i<this->dimensions.x; i++) {
+        for (int j=0; j<this->dimensions.y; j++) {
+            if (this->blocks[i][j]>0) {
+                std::vector<Node<Pair<int>>*> neighbors = this->neighbours(new Node<Pair<int>>(Pair<int>(i, j)));
+                for (int k=0; k<neighbors.size(); k++) {
+                    Pair<int> pos = neighbors[k]->getData();
+                    if (this->blocks[pos.x][pos.y]==0) return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+Node<Pair<int>>* Maze::bestPosition(Node<Pair<int>>* location) {
+    Pair<int> loc = location->getData();
+    Pair<int> nghb[8] {Pair<int>(loc.x+1, loc.y), Pair<int>(loc.x-1, loc.y),
+                       Pair<int>(loc.x, loc.y+1), Pair<int>(loc.x, loc.y-1),
+                       Pair<int>(loc.x+1, loc.y+1), Pair<int>(loc.x+1, loc.y-1),
+                       Pair<int>(loc.x-1, loc.y+1), Pair<int>(loc.x-1, loc.y-1)};
+    Node<Pair<int>>* node;
+    int i=0;
+    for (; i<8; i++) {
+        if (nghb[i].x < this->dimensions.x && nghb[i].y < this->dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && this->blocks[nghb[i].x][nghb[i].y]!=-1) {
+            node = new Node(nghb[i], location);
+            break;
+        }
+    }
+    for (; i<8; i++) {
+        bool notBlockandInBoard = nghb[i].x < this->dimensions.x && nghb[i].y < this->dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && this->blocks[nghb[i].x][nghb[i].y]!=-1;
+        if (!notBlockandInBoard) continue;
+        Pair<int> pos = node->getData();
+        if (this->blocks[pos.x][pos.y]>this->blocks[nghb[i].x][nghb[i].y]) node = new Node(nghb[i], location);
+    }
+    return node;
+}
+
+void Maze::searchAll() {
+    this->weight = 1;
+    std::vector<Node<Pair<int>>*> path;
+    path.push_back(new Node<Pair<int>>(*position));
+    Pair<int> pos = position->getData();
+    this->blocks[pos.x][pos.y]++;
+    while (true) {
+        Node<Pair<int>>* newNode = this->bestPosition(position);
+        Pair<int> pos = position->getData();
+        Pair<int> newPos = newNode->getData();
+        if (this->blocks[newPos.x][newPos.y]>0 && this->blocks[pos.x][pos.y]==1) {
+            if (this->allChecked()) break;
+        }
+        this->blocks[newPos.x][newPos.y]++;
+        position = newNode;
+        path.push_back(new Node<Pair<int>>(*position));
+    }
+    this->allPaths.push_back(path);
+}

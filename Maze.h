@@ -30,4 +30,7 @@ class Maze {
         std::vector<Node<Pair<int>>*> neighbours(Node<Pair<int>>* location);
         void shortestPath();
         void alphaShortestPath(int w);
+        bool allChecked();
+        Node<Pair<int>>* bestPosition(Node<Pair<int>>* location);
+        void searchAll();
 };
