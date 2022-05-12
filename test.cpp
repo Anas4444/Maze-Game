@@ -5,6 +5,6 @@ int main() {
     m.print();
     //m.alphaShortestPath();
     //m.shortestPath();
-    m.searchAll();
+    m.search();
     m.showAll();
 }

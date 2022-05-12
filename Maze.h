@@ -13,6 +13,7 @@ class Maze {
         Node<Pair<int>>* position;
         std::vector<Node<Pair<int>>*> explored;
         std::vector<std::vector<Node<Pair<int>>*>> allPaths;
+        std::vector<Node<Pair<int>>*> allSearch;
     public:
         Maze();
         Maze(std::string path);
@@ -32,5 +33,5 @@ class Maze {
         void alphaShortestPath(int w);
         bool allChecked();
         Node<Pair<int>>* bestPosition(Node<Pair<int>>* location);
-        void searchAll();
+        void search();
 };
