@@ -4,7 +4,7 @@
 int main() {
     Maze m("Maze/maze2.txt");
     m.print();
-    m.alphaShortestPath(5);
+    m.alphaShortestPath(2);
     //m.shortestPath();
     //m.search();
     m.showAll();
