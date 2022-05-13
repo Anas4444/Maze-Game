@@ -6,12 +6,13 @@ Graph::Graph() {
 
 Graph::Graph(int **board, Pair<int> d) {
     std::vector<std::vector<NodeG*>> nghbSection;
+    std::vector<NodeG*> isole;
     for (int i=0; i<d.x; i++) {
         for (int j=0; j<d.y; j++) {
             if (board[i][j]<0) continue;
             NodeG* node = new NodeG(Pair<int>(i, j));
             std::vector<NodeG*> neighb = neighbours(node, board, d);
-            if (neighb.size()<=1) isolated.push_back(new NodeG(Data(1), Pair<int>(i, j)));
+            if (neighb.size()<=1) isole.push_back(new NodeG(Data(1), Pair<int>(i, j)));
             std::vector<NodeG*> nghb;
             if (neighb.size()>=3) {
                 section.push_back(new NodeG(Data(1), Pair<int>(i, j)));
@@ -32,11 +33,12 @@ Graph::Graph(int **board, Pair<int> d) {
             std::vector<NodeG*> ngh = neighbours(node, board, d);
             int distance = 0;
             int n = ngh.size();
-            while (n<3 && n>1) {
+            while (n==2) {
                 for (int k=0; k<n; k++) {
                     NodeG* previous = node->parent;
                     if (ngh[k]->position==previous->position) ngh.erase(ngh.begin()+k);
                 }
+                node->addPoint(ngh[0]);
                 node = ngh[0];
                 distance++;
                 ngh = neighbours(node, board, d);
@@ -52,9 +54,9 @@ Graph::Graph(int **board, Pair<int> d) {
             }
             else {
                 p = node;
-                for(int k=0; k<this->isolated.size(); k++) {
-                    if (inVector(node, this->isolated)) {
-                        this->isolated.erase(this->isolated.begin()+k);
+                for(int k=0; k<isole.size(); k++) {
+                    if (inVector(node, isole)) {
+                        isole.erase(isole.begin()+k);
                         break;
                     }
                 }
@@ -65,6 +67,29 @@ Graph::Graph(int **board, Pair<int> d) {
         }
         tempS.erase(tempS.begin());
     }
+    int n = isole.size();
+    for (int i=0; i<n; i++) {
+        std::vector<NodeG*> ngh = neighbours(isole[i], board, d);
+        if (ngh.size()==0 || inVector(isole[i], this->isolated)) continue;
+        NodeG* node = ngh[0];
+        isole[i]->addPoint(node);
+        ngh = neighbours(node, board, d);
+        int m = ngh.size();
+        int distance = 2;
+        while(m==2) {
+            for (int k=0; k<n; k++) {
+                NodeG* previous = node->parent;
+                if (ngh[k]->position==previous->position) ngh.erase(ngh.begin()+k);
+            }
+            node->addPoint(ngh[0]);
+            node = ngh[0];
+            distance++;
+            ngh = neighbours(node, board, d);
+            m = ngh.size();
+        }
+        node->setData(Data(distance));
+        this->isolated.push_back(node);
+    }
 }
 
 bool Graph::inVector(NodeG* node, std::vector<NodeG*> tempS) {
@@ -72,6 +97,10 @@ bool Graph::inVector(NodeG* node, std::vector<NodeG*> tempS) {
         if (node->position==tempS[i]->position) return true;
     }
     return false;
+}
+
+NodeG* previous(NodeG* node, int** board, Pair<int> d) {
+
 }
 
 std::vector<NodeG*> Graph::neighbours(NodeG* node, int** board, Pair<int> d) {
