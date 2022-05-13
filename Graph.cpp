@@ -34,8 +34,8 @@ Graph::Graph(int **board, Pair<int> d) {
             int distance = 0;
             int n = ngh.size();
             while (n==2) {
+                NodeG* previous = node->parent;
                 for (int k=0; k<n; k++) {
-                    NodeG* previous = node->parent;
                     if (ngh[k]->position==previous->position) ngh.erase(ngh.begin()+k);
                 }
                 node->addPoint(ngh[0]);
@@ -77,8 +77,8 @@ Graph::Graph(int **board, Pair<int> d) {
         int m = ngh.size();
         int distance = 2;
         while(m==2) {
+            NodeG* previous = node->parent;
             for (int k=0; k<n; k++) {
-                NodeG* previous = node->parent;
                 if (ngh[k]->position==previous->position) ngh.erase(ngh.begin()+k);
             }
             node->addPoint(ngh[0]);
