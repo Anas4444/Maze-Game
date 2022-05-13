@@ -30,18 +30,20 @@ Graph::Graph(int **board, Pair<int> d) {
             NodeG* node = nghbSection[i][j];
             std::vector<NodeG*> ngh = neighbours(node, board, d);
             int distance = 0;
-            while (ngh.size()<3 && ngh.size()>1) {
-                for (int k=0; k<ngh.size(); k++) {
+            int n = ngh.size();
+            while (n<3 && n>1) {
+                for (int k=0; k<n; k++) {
                     NodeG* previous = node->parent;
                     if (ngh[k]->position==previous->position) ngh.erase(ngh.begin()+k);
                 }
                 node = ngh[0];
                 distance++;
                 ngh = neighbours(node, board, d);
+                n = ngh.size();
             }
             if (!inSection(node, tempS)) continue;
             NodeG* p;
-            if (ngh.size()>1)
+            if (n>1)
             {
                 p = node->parent;   
                 p->addPoint(node);
