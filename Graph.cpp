@@ -99,10 +99,6 @@ bool Graph::inVector(NodeG* node, std::vector<NodeG*> tempS) {
     return false;
 }
 
-NodeG* previous(NodeG* node, int** board, Pair<int> d) {
-
-}
-
 std::vector<NodeG*> Graph::neighbours(NodeG* node, int** board, Pair<int> d) {
     Pair<int> pos = node->position;
     Pair<int> nghb[4] {Pair<int>(pos.x+1, pos.y), Pair<int>(pos.x-1, pos.y),
