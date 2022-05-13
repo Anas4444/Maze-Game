@@ -37,4 +37,3 @@ template <class S>
 std::ostream &operator<<(std::ostream &os, Pair<S> const &m) { 
     return os << "(" << m.x << ", " << m.y << ")";
 }
-
