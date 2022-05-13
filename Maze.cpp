@@ -189,6 +189,31 @@ Node<Pair<int>>* Maze::bestPosition(Node<Pair<int>>* location) {
     return node;
 }
 
+bool Maze::hasPath() {
+    f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
+    std::vector<Node<Pair<int>>*> path;
+    //f->printHBoard();
+    Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
+    f->add(new Node<Pair<int>>(*node));
+    while(node->getData()!=destination && !f->empty()) {
+        //f->printOne();
+        node = f->remove();
+        //std::cout << "Best One : ";
+        //node->printOne();
+        //std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
+        Pair<int> pos = node->getData();
+        this->blocks[pos.x][pos.y]++;
+        //this->explore();
+        std::vector<Node<Pair<int>>*> neighb = neighbours(node);
+        for (int i=0; i<neighb.size(); i++) {
+            if (!inExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i])) 
+                f->add(new Node<Pair<int>>(*neighb[i]));
+        }
+    }
+    if (node->getData()!=destination) return false;
+    return true;
+}
+
 void Maze::shortestPath() {
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     std::vector<Node<Pair<int>>*> path;
@@ -221,6 +246,10 @@ void Maze::shortestPath() {
 }
 
 void Maze::alphaShortestPath(int w = 0) {
+    if (!hasPath()) {
+        this->weight = 0;
+        return;
+    }
     this->weight = w;
     std::vector<Node<Pair<int>>*> allNodes;
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);

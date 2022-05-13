@@ -29,6 +29,7 @@ class Maze {
         void draw();
         void draw(Node<Pair<int>>* node);
         std::vector<Node<Pair<int>>*> neighbours(Node<Pair<int>>* location);
+        bool hasPath();
         void shortestPath();
         void alphaShortestPath(int w);
         bool allChecked();
