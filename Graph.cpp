@@ -42,7 +42,7 @@ Graph::Graph(int **board, Pair<int> d) {
                 ngh = neighbours(node, board, d);
                 n = ngh.size();
             }
-            if (!inSection(node, tempS)) continue;
+            if (!inVector(node, tempS)) continue;
             NodeG* p;
             if (n>1)
             {
@@ -53,7 +53,7 @@ Graph::Graph(int **board, Pair<int> d) {
             else {
                 p = node;
                 for(int k=0; k<this->isolated.size(); k++) {
-                    if (inSection(node, this->isolated)) {
+                    if (inVector(node, this->isolated)) {
                         this->isolated.erase(this->isolated.begin()+k);
                         break;
                     }
@@ -67,7 +67,7 @@ Graph::Graph(int **board, Pair<int> d) {
     }
 }
 
-bool Graph::inSection(NodeG* node, std::vector<NodeG*> tempS) {
+bool Graph::inVector(NodeG* node, std::vector<NodeG*> tempS) {
     for (int i=0; i<tempS.size(); i++) {
         if (node->position==tempS[i]->position) return true;
     }

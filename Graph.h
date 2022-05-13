@@ -12,5 +12,5 @@ class Graph {
         Graph(Graph& g);
         virtual ~Graph();
         std::vector<NodeG*> neighbours(NodeG* node, int** board, Pair<int> d);
-        bool inSection(NodeG* node, std::vector<NodeG*> tempS);
+        bool inVector(NodeG* node, std::vector<NodeG*> tempS);
 };
