@@ -11,6 +11,7 @@ Graph::Graph(int **board, Pair<int> d) {
             if (board[i][j]<0) continue;
             NodeG* node = new NodeG(Pair<int>(i, j));
             std::vector<NodeG*> neighb = neighbours(node, board, d);
+            if (neighb.size()<=1) isolated.push_back(new NodeG(Data(1), Pair<int>(i, j)));
             std::vector<NodeG*> nghb;
             if (neighb.size()>=3) {
                 section.push_back(new NodeG(Data(1), Pair<int>(i, j)));
@@ -49,7 +50,15 @@ Graph::Graph(int **board, Pair<int> d) {
                 p->addPoint(node);
                 node->addPoint(p);
             }
-            else p = node;
+            else {
+                p = node;
+                for(int k=0; k<this->isolated.size(); k++) {
+                    if (inSection(node, this->isolated)) {
+                        this->isolated.erase(this->isolated.begin()+k);
+                        break;
+                    }
+                }
+            }
             p->addPoint(section[i]);
             p->setData(Data(distance));
             section[i]->addPoint(p);

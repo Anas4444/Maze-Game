@@ -4,6 +4,7 @@
 class Graph {
     private:
         std::vector<NodeG*> section;
+        std::vector<NodeG*> isolated;
         NodeG* graph;
     public:
         Graph();
