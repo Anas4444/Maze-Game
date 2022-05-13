@@ -7,6 +7,7 @@ struct NodeG {
         Pair<int> position;
         std::vector<NodeG*>* points;
         NodeG* parent;
+        NodeG* next;
         int steps;
 
         NodeG();
@@ -17,6 +18,7 @@ struct NodeG {
         NodeG(Data d, Pair<int> pos, NodeG* p);
         NodeG(NodeG& node);
         void setPoints(std::vector<NodeG*>* p);
+        void setNext(NodeG* p);
         void addPoint(NodeG* pt);
         void setData(Data d);
         void print();

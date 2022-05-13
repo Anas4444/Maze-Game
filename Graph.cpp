@@ -38,7 +38,7 @@ Graph::Graph(int **board, Pair<int> d) {
                 for (int k=0; k<n; k++) {
                     if (ngh[k]->position==previous->position) ngh.erase(ngh.begin()+k);
                 }
-                node->addPoint(ngh[0]);
+                node->next = ngh[0];
                 node = ngh[0];
                 distance++;
                 ngh = neighbours(node, board, d);
@@ -72,7 +72,7 @@ Graph::Graph(int **board, Pair<int> d) {
         std::vector<NodeG*> ngh = neighbours(isole[i], board, d);
         if (ngh.size()==0 || inVector(isole[i], this->isolated)) continue;
         NodeG* node = ngh[0];
-        isole[i]->addPoint(node);
+        isole[i]->next = node;
         ngh = neighbours(node, board, d);
         int m = ngh.size();
         int distance = 2;
@@ -81,7 +81,7 @@ Graph::Graph(int **board, Pair<int> d) {
             for (int k=0; k<n; k++) {
                 if (ngh[k]->position==previous->position) ngh.erase(ngh.begin()+k);
             }
-            node->addPoint(ngh[0]);
+            node->next = ngh[0];
             node = ngh[0];
             distance++;
             ngh = neighbours(node, board, d);

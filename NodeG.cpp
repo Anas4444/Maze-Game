@@ -4,6 +4,7 @@ NodeG::NodeG() {
     this->data.time = 0;
     this->points = new std::vector<NodeG*>();
     this->parent = nullptr;
+    this->next = nullptr;
     this->steps = 0;
 }
 
@@ -12,14 +13,15 @@ NodeG::NodeG(Pair<int> pos) {
     this->data.time = 0;
     this->points = new std::vector<NodeG*>();
     this->parent = nullptr;
+    this->next = nullptr;
     this->steps = 0;
 }
 
 NodeG::NodeG(Pair<int> pos, NodeG* p) {
     this->position = pos;
     this->points = new std::vector<NodeG*>();
-    this->points->push_back(p);
     this->parent = p;
+    this->next = nullptr;
     this->steps = 0;
 }
 
@@ -28,6 +30,7 @@ NodeG::NodeG(Data d, Pair<int> pos) {
     this->position = pos;
     this->points = new std::vector<NodeG*>();
     this->parent = nullptr;
+    this->next = nullptr;
     this->steps = 0;
 }
 
@@ -39,6 +42,7 @@ NodeG::NodeG(Data d, Pair<int> pos, std::vector<NodeG*>* p) {
         this->points->push_back(p->at(i));
     }
     this->parent = p->at(0);
+    this->next = nullptr;
     this->steps = 0;
 }
 
@@ -48,6 +52,7 @@ NodeG::NodeG(Data d, Pair<int> pos, NodeG* p) {
     this->points = new std::vector<NodeG*>();
     this->points->push_back(p);
     this->parent = p;
+    this->next = nullptr;
     this->steps = 0;
 }
 
@@ -55,6 +60,7 @@ NodeG::NodeG(NodeG& node) {
     this->data = node.data;
     this->points = node.points;
     this->parent = node.parent;
+    this->next = node.next;
     this->steps = node.steps;
 }
 
@@ -63,7 +69,10 @@ void NodeG::setPoints(std::vector<NodeG*>* p) {
     for (int i=0; i<p->size(); i++) {
         this->points->push_back(p->at(i));
     }
-    this->parent = p->at(0);
+}
+
+void NodeG::setNext(NodeG* p) {
+    this->next = p;
 }
 
 void NodeG::addPoint(NodeG* pt) {
