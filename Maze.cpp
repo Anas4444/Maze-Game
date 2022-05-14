@@ -246,6 +246,8 @@ void Maze::shortestPath() {
 }
 
 void Maze::alphaShortestPath(int w = 0) {
+    Graph* g = new Graph(blocks, dimensions);
+    //g->print();
     if (!hasPath()) {
         this->weight = 0;
         return;

@@ -13,4 +13,5 @@ class Graph {
         virtual ~Graph();
         std::vector<NodeG*> neighbours(NodeG* node, int** board, Pair<int> d);
         bool inVector(NodeG* node, std::vector<NodeG*> tempS);
+        void print();
 };

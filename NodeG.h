@@ -1,11 +1,12 @@
 #pragma once
 #include "Data.cpp"
-#include "Pair.cpp"
+#include "Node.cpp"
 
 struct NodeG {
         Data data;
         Pair<int> position;
         std::vector<NodeG*>* points;
+        std::vector<NodeG*> fullpt;
         NodeG* parent;
         NodeG* next;
         int steps;
@@ -20,6 +21,8 @@ struct NodeG {
         void setPoints(std::vector<NodeG*>* p);
         void setNext(NodeG* p);
         void addPoint(NodeG* pt);
+        void addPt(NodeG* node);
         void setData(Data d);
         void print();
+        bool inVector(NodeG* node, std::vector<NodeG*> vec);
 };

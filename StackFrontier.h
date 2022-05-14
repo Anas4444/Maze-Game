@@ -1,6 +1,5 @@
 #pragma once
-#include "Node.cpp"
-#include <vector>
+#include "Graph.cpp"
 
 template <class T>
 class StackFrontier {

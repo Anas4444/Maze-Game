@@ -1,4 +1,5 @@
 #include <iostream>
+
 template <class S>
 struct Pair {
     S x, y;
