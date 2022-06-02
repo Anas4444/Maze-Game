@@ -7,6 +7,7 @@ class Maze {
     private:
         int weight = 0;
         int** blocks;
+        std::string path;
         StackFrontier<int>* f;
         Pair<int> dimensions;
         Pair<int> destination;
@@ -19,6 +20,7 @@ class Maze {
         Maze(std::string path);
         virtual ~Maze();
         void clear();
+        void fillBlocks();
         void print();
         void showAll(int weight);
         void explore();

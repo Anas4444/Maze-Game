@@ -4,42 +4,23 @@ Maze::Maze() {}
 
 Maze::Maze(std::string path) {
     std::string text;
-    std::ifstream file(path);
-    std::vector<std::string> allText;
-    while(std::getline(file, text)) {
-        allText.push_back(text);
-    }
-    file.close();
-    this->dimensions.set(allText.size(), allText[0].length());
-    this->blocks = new int*[dimensions.x];
-    for (int i=0; i<dimensions.x; i++) this->blocks[i] = new int[dimensions.y];
-    for (int i=0; i<dimensions.x; i++) {
-        for (int j=0; j<dimensions.y; j++) {
-            if (allText[i][j]=='P') {
-                this->position = new Node(Pair<int>(i, j));
-                this->blocks[i][j] = 0;
-            }
-            else if (allText[i][j]=='L') {
-                this->destination.set(i, j);
-                this->blocks[i][j] = 0;
-            }
-            else if (allText[i][j]==' ') this->blocks[i][j] = 0;
-            else this->blocks[i][j] = -1;
-        }
-    }
+    this->path = path;
+    this->fillBlocks();
 }
 
 Maze::~Maze() {
     this->clear();
+    this->eraseBlocks();
 }
 
 void Maze::clear() {
-    this->eraseBlocks();
     this->eraseExplored();
     this->erasePosition();
     this->eraseFrontier();
     this->eraseAllSearch();
     this->eraseAllPaths();
+    this->zero();
+    this->weight = 0;
 }
 
 void Maze::eraseExplored() {
@@ -83,6 +64,33 @@ void Maze::erasePosition() {
     delete this->position;
 }
 
+void Maze::fillBlocks() {
+    std::string text;
+    std::ifstream file(path);
+    std::vector<std::string> allText;
+    while(std::getline(file, text)) {
+        allText.push_back(text);
+    }
+    file.close();
+    this->dimensions.set(allText.size(), allText[0].length());
+    this->blocks = new int*[dimensions.x];
+    for (int i=0; i<dimensions.x; i++) this->blocks[i] = new int[dimensions.y];
+    for (int i=0; i<dimensions.x; i++) {
+        for (int j=0; j<dimensions.y; j++) {
+            if (allText[i][j]=='P') {
+                this->position = new Node(Pair<int>(i, j));
+                this->blocks[i][j] = 0;
+            }
+            else if (allText[i][j]=='L') {
+                this->destination.set(i, j);
+                this->blocks[i][j] = 0;
+            }
+            else if (allText[i][j]==' ') this->blocks[i][j] = 0;
+            else this->blocks[i][j] = -1;
+        }
+    }
+}
+
 void Maze::print() {
     for (int i=0; i<this->dimensions.x; i++) {
         for (int j=0; j<this->dimensions.y; j++) {
@@ -121,7 +129,7 @@ void Maze::explore() {
 void Maze::zero() {
     for (int i=0; i<this->dimensions.x; i++) {
         for (int j=0; j<this->dimensions.y; j++) {
-            if (this->blocks[i][j]==-2) this->blocks[i][j]=0;
+            if (this->blocks[i][j]>0 || this->blocks[i][j]==-2) this->blocks[i][j]=0;
         }
     }
 }
