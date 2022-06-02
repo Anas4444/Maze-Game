@@ -20,8 +20,9 @@ template <class T>
 GreedyFrontier<T>::~GreedyFrontier() {
     delete destination;
     for (int i=0; i<rows; i++) {
-        delete[] hBoard;
+        delete[] hBoard[i];
     }
+    delete[] hBoard;
 }
 
 template <class T>

@@ -17,6 +17,8 @@ class Maze {
     public:
         Maze();
         Maze(std::string path);
+        virtual ~Maze();
+        void clear();
         void print();
         void showAll(int weight);
         void explore();
@@ -24,15 +26,21 @@ class Maze {
         void zero(Node<Pair<int>>* node);
         bool isDuplicate(Node<Pair<int>>* node);
         bool inExplored(Pair<int> pair);
-        bool isExplored(Node<Pair<int>>* node);
+        bool isExplored(Pair<int> data, Node<Pair<int>>* parent);
         void drawPath(int i);
         void draw();
         void draw(Node<Pair<int>>* node);
-        std::vector<Node<Pair<int>>*> neighbours(Node<Pair<int>>* location);
+        std::vector<Pair<int>> neighbours(Pair<int> location);
+        Pair<int> bestPosition(Pair<int> location);
         bool hasPath();
         void shortestPath();
         void alphaShortestPath(int w);
         bool allChecked();
-        Node<Pair<int>>* bestPosition(Node<Pair<int>>* location);
         void search();
+        void eraseAllSearch();
+        void eraseAllPaths();
+        void eraseExplored();
+        void erasePosition();
+        void eraseFrontier();
+        void eraseBlocks();
 };

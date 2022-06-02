@@ -30,7 +30,7 @@ Node<T>::Node(Node& node) {
 
 template <class T>
 Node<T>::~Node() {
-    Node<T>* p = this;
+    Node<T>* p = this->parent;
     while(p != nullptr) {
         Node<T>* del = p;
         p = p->parent;

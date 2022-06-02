@@ -23,3 +23,8 @@ struct Node {
         int operator!=(Node<T> const &m) const;
         bool equals(Node<T>* node);
 };
+
+template <class T>
+std::ostream &operator<<(std::ostream &os, Node<T> const &m) { 
+    return os << m.data << " | steps: " << m.steps;
+}

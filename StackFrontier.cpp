@@ -52,9 +52,9 @@ Node<Pair<T>>* StackFrontier<T>::getNode(Node<Pair<T>>* node) {
 }
 
 template <class T>
-bool StackFrontier<T>::inFrontier(Node<Pair<T>>* node) {
+bool StackFrontier<T>::inFrontier(Pair<T> p) {
     for (int i=0; i<this->frontier->size(); i++) {
-        if (node->getData()==this->frontier->at(i)->getData()) return true;
+        if (p==this->frontier->at(i)->getData()) return true;
     }
     return false;
 }

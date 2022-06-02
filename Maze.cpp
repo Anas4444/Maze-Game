@@ -29,6 +29,60 @@ Maze::Maze(std::string path) {
     }
 }
 
+Maze::~Maze() {
+    this->clear();
+}
+
+void Maze::clear() {
+    this->eraseBlocks();
+    this->eraseExplored();
+    this->erasePosition();
+    this->eraseFrontier();
+    this->eraseAllSearch();
+    this->eraseAllPaths();
+}
+
+void Maze::eraseExplored() {
+    for (int i=0; i<this->explored.size(); i++) delete this->explored[i];
+    this->explored.clear();
+    this->explored.shrink_to_fit();
+}
+
+void Maze::eraseBlocks() {
+    for (int i=0; i<this->dimensions.x; i++) delete[] this->blocks[i];
+    delete[] this->blocks;
+}
+
+void Maze::eraseAllSearch() {
+    int n = this->allSearch.size();
+    if (n==0) return;
+    delete this->allSearch[n-1];
+    this->allSearch.clear();
+    this->allSearch.shrink_to_fit();
+}
+
+void Maze::eraseAllPaths() {
+    int n = this->allPaths.size();
+    if (n==0) return;
+    for (int i=0; i<n; i++) {
+        int m = this->allPaths[i].size();
+        if (m==0) continue;
+        delete this->allPaths[i][m-1];
+        this->allPaths[i].clear();
+        this->allPaths[i].shrink_to_fit();
+    }
+    this->allPaths.clear();
+    this->allPaths.shrink_to_fit();
+}
+
+void Maze::eraseFrontier() {
+    delete this->f;
+}
+
+void Maze::erasePosition() {
+    delete this->position;
+}
+
 void Maze::print() {
     for (int i=0; i<this->dimensions.x; i++) {
         for (int j=0; j<this->dimensions.y; j++) {
@@ -62,49 +116,6 @@ void Maze::explore() {
         std::cout << "\n";
     }
     std::cout << "\n";
-}
-
-std::vector<Node<Pair<int>>*> Maze::neighbours(Node<Pair<int>>* location) {
-    Pair<int> loc = location->getData();
-    Pair<int> nghb[8] {Pair<int>(loc.x+1, loc.y), Pair<int>(loc.x-1, loc.y),
-                       Pair<int>(loc.x, loc.y+1), Pair<int>(loc.x, loc.y-1),
-                       Pair<int>(loc.x+1, loc.y+1), Pair<int>(loc.x+1, loc.y-1),
-                       Pair<int>(loc.x-1, loc.y+1), Pair<int>(loc.x-1, loc.y-1)}; 
-    std::vector<Node<Pair<int>>*> result;
-    for (int i=0; i<8; i++) {
-        if (nghb[i].x < this->dimensions.x && nghb[i].y < this->dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && this->blocks[nghb[i].x][nghb[i].y]!=-1)
-            result.push_back(new Node(nghb[i], location));
-    }
-    return result;
-}
-
-bool Maze::inExplored(Pair<int> pair) {
-    return this->blocks[pair.x][pair.y]>0;
-}
-
-bool Maze::isExplored(Node<Pair<int>>* node) {
-    for (int i=0; i<this->explored.size(); i++) {
-        if (this->explored[i]->parent && node->parent) 
-            if (this->explored[i]->parent->getData()==node->getData() && this->explored[i]->equals(node->parent)) return true;
-    }
-    return false;
-}
-
-bool Maze::isDuplicate(Node<Pair<int>>* node) {
-    Node<Pair<int>>* p = node;
-    std::vector<Node<Pair<int>>*> path;
-    while (p != nullptr) {
-        Pair<int> pos = p->getData();
-        path.push_back(new Node<Pair<int>>(*p));
-        p = p->parent;
-    }
-    int n = path.size();
-    for (int i=0; i<n; i++) {
-        for (int j=0; j<n; j++) {
-            if (path[i]->getData()==path[j]->getData() && i!=j) return true;
-        }
-    }
-    return false;
 }
 
 void Maze::zero() {
@@ -151,13 +162,42 @@ void Maze::draw(Node<Pair<int>>* node) {
     }
 } 
 
+bool Maze::inExplored(Pair<int> pair) {
+    return this->blocks[pair.x][pair.y]>0;
+}
+
+bool Maze::isExplored(Pair<int> data, Node<Pair<int>>* parent) {
+    for (int i=0; i<this->explored.size(); i++) {
+        if (this->explored[i]->parent && parent) 
+            if (this->explored[i]->parent->getData()==data && this->explored[i]->equals(parent)) return true;
+    }
+    return false;
+}
+
+bool Maze::isDuplicate(Node<Pair<int>>* node) {
+    Node<Pair<int>>* p = node;
+    std::vector<Node<Pair<int>>*> path;
+    while (p != nullptr) {
+        Pair<int> pos = p->getData();
+        path.push_back(p);
+        p = p->parent;
+    }
+    int n = path.size();
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<n; j++) {
+            if (path[i]->getData()==path[j]->getData() && i!=j) return true;
+        }
+    }
+    return false;
+}
+
 bool Maze::allChecked() {
     for (int i=0; i<this->dimensions.x; i++) {
         for (int j=0; j<this->dimensions.y; j++) {
             if (this->blocks[i][j]>0) {
-                std::vector<Node<Pair<int>>*> neighbors = this->neighbours(new Node<Pair<int>>(Pair<int>(i, j)));
+                std::vector<Pair<int>> neighbors = this->neighbours(Pair<int>(i, j));
                 for (int k=0; k<neighbors.size(); k++) {
-                    Pair<int> pos = neighbors[k]->getData();
+                    Pair<int> pos = neighbors[k];
                     if (this->blocks[pos.x][pos.y]==0) return false;
                 }
             }
@@ -166,48 +206,62 @@ bool Maze::allChecked() {
     return true;
 }
 
-Node<Pair<int>>* Maze::bestPosition(Node<Pair<int>>* location) {
-    Pair<int> loc = location->getData();
+Pair<int> Maze::bestPosition(Pair<int> loc) {
     Pair<int> nghb[8] {Pair<int>(loc.x+1, loc.y), Pair<int>(loc.x-1, loc.y),
                        Pair<int>(loc.x, loc.y+1), Pair<int>(loc.x, loc.y-1),
                        Pair<int>(loc.x+1, loc.y+1), Pair<int>(loc.x+1, loc.y-1),
                        Pair<int>(loc.x-1, loc.y+1), Pair<int>(loc.x-1, loc.y-1)};
-    Node<Pair<int>>* node;
+    Pair<int> pos;
     int i=0;
     for (; i<8; i++) {
         if (nghb[i].x < this->dimensions.x && nghb[i].y < this->dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && this->blocks[nghb[i].x][nghb[i].y]!=-1) {
-            node = new Node(nghb[i], location);
+            pos = nghb[i];
             break;
         }
     }
     for (; i<8; i++) {
         bool notBlockandInBoard = nghb[i].x < this->dimensions.x && nghb[i].y < this->dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && this->blocks[nghb[i].x][nghb[i].y]!=-1;
         if (!notBlockandInBoard) continue;
-        Pair<int> pos = node->getData();
-        if (this->blocks[pos.x][pos.y]>this->blocks[nghb[i].x][nghb[i].y]) node = new Node(nghb[i], location);
+        if (this->blocks[pos.x][pos.y]>this->blocks[nghb[i].x][nghb[i].y]) pos = nghb[i];
     }
-    return node;
+    return pos;
+}
+
+std::vector<Pair<int>> Maze::neighbours(Pair<int> loc) {
+    Pair<int> nghb[8] {Pair<int>(loc.x+1, loc.y), Pair<int>(loc.x-1, loc.y),
+                       Pair<int>(loc.x, loc.y+1), Pair<int>(loc.x, loc.y-1),
+                       Pair<int>(loc.x+1, loc.y+1), Pair<int>(loc.x+1, loc.y-1),
+                       Pair<int>(loc.x-1, loc.y+1), Pair<int>(loc.x-1, loc.y-1)}; 
+    std::vector<Pair<int>> result;
+    for (int i=0; i<8; i++) {
+        if (nghb[i].x < this->dimensions.x && nghb[i].y < this->dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && this->blocks[nghb[i].x][nghb[i].y]!=-1)
+            result.push_back(nghb[i]);
+    }
+    return result;
 }
 
 bool Maze::hasPath() {
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     std::vector<Node<Pair<int>>*> path;
     //f->printHBoard();
-    Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
-    f->add(new Node<Pair<int>>(*node));
+    Node<Pair<int>>* node = this->position;
+    f->add(node);
     while(node->getData()!=destination && !f->empty()) {
         //f->printOne();
         node = f->remove();
+        this->explored.push_back(node);
         //std::cout << "Best One : ";
         //node->printOne();
         //std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
         Pair<int> pos = node->getData();
         this->blocks[pos.x][pos.y]++;
         //this->explore();
-        std::vector<Node<Pair<int>>*> neighb = neighbours(node);
+        std::vector<Pair<int>> neighb = neighbours(node->getData());
         for (int i=0; i<neighb.size(); i++) {
-            if (!inExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i])) 
-                f->add(new Node<Pair<int>>(*neighb[i]));
+            if (!inExplored(neighb[i]) && !f->inFrontier(neighb[i])) {
+                Node<Pair<int>>* newNode = new Node(neighb[i], node);
+                f->add(newNode);
+            } 
         }
     }
     if (node->getData()!=destination) return false;
@@ -215,11 +269,12 @@ bool Maze::hasPath() {
 }
 
 void Maze::shortestPath() {
+    this->weight = 1;
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     std::vector<Node<Pair<int>>*> path;
     f->printHBoard();
-    Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
-    f->add(new Node<Pair<int>>(*node));
+    Node<Pair<int>>* node = this->position;
+    f->add(node);
     while(node->getData()!=destination && !f->empty()) {
         f->printOne();
         node = f->remove();
@@ -229,16 +284,18 @@ void Maze::shortestPath() {
         Pair<int> pos = node->getData();
         this->blocks[pos.x][pos.y]++;
         this->explore();
-        std::vector<Node<Pair<int>>*> neighb = neighbours(node);
+        std::vector<Pair<int>> neighb = neighbours(node->getData());
         for (int i=0; i<neighb.size(); i++) {
-            if (!inExplored(neighb[i]->getData()) && !f->inFrontier(neighb[i])) 
-                f->add(new Node<Pair<int>>(*neighb[i]));
+            if (!inExplored(neighb[i]) && !f->inFrontier(neighb[i])) {
+                Node<Pair<int>>* newNode = new Node(neighb[i], node);
+                f->add(newNode);
+            }
+
         }
     }
     Node<Pair<int>>* p = node;
     while (p != nullptr) {
-        Pair<int> pos = p->getData();
-        path.push_back(new Node<Pair<int>>(*p));
+        path.push_back(p);
         p = p->parent;
     }
     std::reverse(path.begin(), path.end());
@@ -246,8 +303,6 @@ void Maze::shortestPath() {
 }
 
 void Maze::alphaShortestPath(int w = 0) {
-    Graph* g = new Graph(blocks, dimensions);
-    //g->print();
     if (!hasPath()) {
         this->weight = 0;
         return;
@@ -256,8 +311,8 @@ void Maze::alphaShortestPath(int w = 0) {
     std::vector<Node<Pair<int>>*> allNodes;
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     f->printHBoard();
-    Node<Pair<int>>* node = new Node<Pair<int>>(*(this->position));
-    f->add(new Node<Pair<int>>(*node));
+    Node<Pair<int>>* node = this->position;
+    f->add(node);
     int k=0;
     int d=0;
     while(!f->empty() && (k<w || w<=0) && d<10) {
@@ -283,7 +338,7 @@ void Maze::alphaShortestPath(int w = 0) {
 
                 Pair<int> pos = node->getData();
                 this->blocks[pos.x][pos.y]++;
-                this->explored.push_back(new Node<Pair<int>>(*node));
+                this->explored.push_back(node);
             }
             d++;
             std::cout << k <<" Explored\n\n";
@@ -295,12 +350,14 @@ void Maze::alphaShortestPath(int w = 0) {
         }
         Pair<int> pos = node->getData();
         this->blocks[pos.x][pos.y]++;
-        this->explored.push_back(new Node<Pair<int>>(*node));
+        this->explored.push_back(node);
         this->explore();
-        std::vector<Node<Pair<int>>*> neighb = neighbours(node);
+        std::vector<Pair<int>> neighb = neighbours(node->getData());
         for (int i=0; i<neighb.size(); i++) {
-            if (!isExplored(neighb[i]))
-                f->add(new Node<Pair<int>>(*neighb[i]));
+            if (!isExplored(neighb[i], node)) {
+                Node<Pair<int>>* newNode = new Node(neighb[i], node);
+                f->add(newNode);
+            }
         }
     }
     if (this->weight>this->allPaths.size() || this->weight<=0)
@@ -308,20 +365,19 @@ void Maze::alphaShortestPath(int w = 0) {
 }
 
 void Maze::search() {
-    this->allSearch.push_back(new Node<Pair<int>>(*position));
+    this->allSearch.push_back(position);
     Pair<int> pos = position->getData();
     this->blocks[pos.x][pos.y]++;
     //this->explore();
     while (true) {
-        Node<Pair<int>>* newNode = this->bestPosition(position);
+        Pair<int> newPos = this->bestPosition(position->getData());
         Pair<int> pos = position->getData();
-        Pair<int> newPos = newNode->getData();
         if (this->blocks[newPos.x][newPos.y]>0 && this->blocks[pos.x][pos.y]==1) {
             if (this->allChecked()) break;
         }
         this->blocks[newPos.x][newPos.y]++;
         //this->explore();
-        position = newNode;
-        allSearch.push_back(new Node<Pair<int>>(*position));
+        position = new Node(newPos, position);
+        allSearch.push_back(position);
     }
 }

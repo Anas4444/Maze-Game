@@ -12,7 +12,7 @@ class GreedyFrontier : public QueueFrontier<T> {
     public:
         GreedyFrontier();
         GreedyFrontier(Pair<T>* dest, int rows, int colums);
-        ~GreedyFrontier();
+        virtual ~GreedyFrontier();
         int heuricity(int Ax, int Ay, Pair<T>* B);
         void fillhBoard();
         void printHBoard();
