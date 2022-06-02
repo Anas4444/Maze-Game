@@ -11,10 +11,10 @@ class Maze {
         StackFrontier<int>* f;
         Pair<int> dimensions;
         Pair<int> destination;
-        Node<Pair<int>>* position;
+        Pair<int> position;
         std::vector<Node<Pair<int>>*> explored;
         std::vector<std::vector<Node<Pair<int>>*>> allPaths;
-        std::vector<Node<Pair<int>>*> allSearch;
+        std::vector<Pair<int>> allSearch;
     public:
         Maze();
         Maze(std::string path);
@@ -42,7 +42,6 @@ class Maze {
         void eraseAllSearch();
         void eraseAllPaths();
         void eraseExplored();
-        void erasePosition();
         void eraseFrontier();
         void eraseBlocks();
 };

@@ -5,7 +5,8 @@
 int main() {
     Maze* m = new Maze("Maze/maze1.txt");
     //m->print();
-    m->alphaShortestPath(4);
+    //m->alphaShortestPath(4);
+    m->search();
     m->showAll();
     m->clear();
     //m->shortestPath();

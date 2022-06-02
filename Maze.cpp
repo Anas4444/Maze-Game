@@ -14,7 +14,6 @@ Maze::~Maze() {
 
 void Maze::clear() {
     this->eraseExplored();
-    this->erasePosition();
     this->eraseFrontier();
     this->eraseAllSearch();
     this->eraseAllPaths();
@@ -36,7 +35,6 @@ void Maze::eraseBlocks() {
 void Maze::eraseAllSearch() {
     int n = this->allSearch.size();
     if (n==0) return;
-    delete this->allSearch[n-1];
     this->allSearch.clear();
     this->allSearch.shrink_to_fit();
 }
@@ -59,10 +57,6 @@ void Maze::eraseFrontier() {
     delete this->f;
 }
 
-void Maze::erasePosition() {
-    delete this->position;
-}
-
 void Maze::fillBlocks() {
     std::string text;
     std::ifstream file(path);
@@ -77,7 +71,7 @@ void Maze::fillBlocks() {
     for (int i=0; i<dimensions.x; i++) {
         for (int j=0; j<dimensions.y; j++) {
             if (allText[i][j]=='P') {
-                this->position = new Node(Pair<int>(i, j));
+                this->position = Pair<int>(i, j);
                 this->blocks[i][j] = 0;
             }
             else if (allText[i][j]=='L') {
@@ -94,7 +88,7 @@ void Maze::print() {
     for (int i=0; i<this->dimensions.x; i++) {
         for (int j=0; j<this->dimensions.y; j++) {
             if (this->blocks[i][j]==-1) std::cout << '&';
-            else if (this->position->getData()==Pair(i, j)) std::cout << 'P'; 
+            else if (this->position==Pair(i, j)) std::cout << 'P'; 
             else if (this->destination==Pair(i, j)) std::cout << 'L';
             else if (this->blocks[i][j]>=0) std::cout << ' ';
             else if (this->blocks[i][j]==-2) std::cout << '*';
@@ -251,7 +245,7 @@ bool Maze::hasPath() {
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     std::vector<Node<Pair<int>>*> path;
     //f->printHBoard();
-    Node<Pair<int>>* node = this->position;
+    Node<Pair<int>>* node = new Node<Pair<int>>(this->position);
     f->add(node);
     while(node->getData()!=destination && !f->empty()) {
         //f->printOne();
@@ -280,7 +274,7 @@ void Maze::shortestPath() {
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     std::vector<Node<Pair<int>>*> path;
     f->printHBoard();
-    Node<Pair<int>>* node = this->position;
+    Node<Pair<int>>* node = new Node<Pair<int>>(this->position);
     f->add(node);
     while(node->getData()!=destination && !f->empty()) {
         f->printOne();
@@ -319,7 +313,7 @@ void Maze::alphaShortestPath(int w = 0) {
     std::vector<Node<Pair<int>>*> allNodes;
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
     f->printHBoard();
-    Node<Pair<int>>* node = this->position;
+    Node<Pair<int>>* node = new Node<Pair<int>>(this->position);
     f->add(node);
     int k=0;
     int d=0;
@@ -374,18 +368,18 @@ void Maze::alphaShortestPath(int w = 0) {
 
 void Maze::search() {
     this->allSearch.push_back(position);
-    Pair<int> pos = position->getData();
-    this->blocks[pos.x][pos.y]++;
+    this->blocks[position.x][position.y]++;
     //this->explore();
     while (true) {
-        Pair<int> newPos = this->bestPosition(position->getData());
-        Pair<int> pos = position->getData();
-        if (this->blocks[newPos.x][newPos.y]>0 && this->blocks[pos.x][pos.y]==1) {
+        int n = this->allSearch.size();
+        this->position = this->allSearch[n-1];
+        Pair<int> newPos = this->bestPosition(position);
+        if (this->blocks[newPos.x][newPos.y]>0 && this->blocks[position.x][position.y]==1) {
             if (this->allChecked()) break;
         }
         this->blocks[newPos.x][newPos.y]++;
         //this->explore();
-        position = new Node(newPos, position);
-        allSearch.push_back(position);
+        position = newPos;
+        allSearch.push_back(newPos);
     }
 }
