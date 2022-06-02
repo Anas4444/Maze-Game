@@ -3,7 +3,6 @@
 Maze::Maze() {}
 
 Maze::Maze(std::string path) {
-    std::string text;
     this->path = path;
     this->fillBlocks();
 }
