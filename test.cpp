@@ -8,9 +8,6 @@ int main() {
     m->alphaShortestPath(4);
     //m->shortestPath();
     //m->search();
-    m->showAll();
-    m->clear();
-    m->showAll();
 
     /*NodeG* p0 = new NodeG();
     NodeG* p1 = new NodeG(Pair<int>(1, 2), p0);

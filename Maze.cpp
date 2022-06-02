@@ -314,6 +314,7 @@ void Maze::alphaShortestPath(int w = 0) {
         this->weight = 0;
         return;
     }
+    this->eraseFrontier();
     this->weight = w;
     std::vector<Node<Pair<int>>*> allNodes;
     f = new AStarFrontier<int>(&this->destination, this->dimensions.x, this->dimensions.y);
