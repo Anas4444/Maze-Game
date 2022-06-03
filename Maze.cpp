@@ -22,7 +22,6 @@ Maze::Maze(Pair<int> dest, Pair<int> pos) {
 
 Maze::~Maze() {
     this->clear();
-    this->eraseBlocks();
 }
 
 void Maze::clear() {
@@ -30,7 +29,6 @@ void Maze::clear() {
     this->eraseFrontier();
     this->eraseAllSearch();
     this->eraseAllPaths();
-    this->zero();
     this->weight = 0;
 }
 
@@ -119,29 +117,36 @@ void Maze::print() {
 
 void Maze::showAll(int w=0) {
     if (w==0) w = this->weight;
-    this->explore();
     for (int i=0; i<w; i++) {
         this->drawPath(i+1);
         this->print();
-        this->zero();
+        this->zeroPath();
     }
 }
 
 void Maze::explore() {
-    for (int i=0; i<this->dimensions.x; i++) {
-        for (int j=0; j<this->dimensions.y; j++) {
-            if (this->blocks[i][j]==-1) std::cout << '&';
-            else std::cout << this->blocks[i][j];
+    for (int i=0; i<dimensions.x; i++) {
+        for (int j=0; j<dimensions.y; j++) {
+            if (blocks[i][j]==-1) std::cout << '&';
+            else std::cout << blocks[i][j];
         }
         std::cout << "\n";
     }
     std::cout << "\n";
 }
 
+void Maze::zeroPath() {
+    for (int i=0; i<dimensions.x; i++) {
+        for (int j=0; j<dimensions.y; j++) {
+            if (blocks[i][j]==-2) blocks[i][j]=0;
+        }
+    }
+}
+
 void Maze::zero() {
-    for (int i=0; i<this->dimensions.x; i++) {
-        for (int j=0; j<this->dimensions.y; j++) {
-            if (this->blocks[i][j]>0 || this->blocks[i][j]==-2) this->blocks[i][j]=0;
+    for (int i=0; i<dimensions.x; i++) {
+        for (int j=0; j<dimensions.y; j++) {
+            if (blocks[i][j]>0 || blocks[i][j]==-2) blocks[i][j]=0;
         }
     }
 }
@@ -183,7 +188,12 @@ void Maze::draw(Node<Pair<int>>* node) {
 } 
 
 bool Maze::inExplored(Pair<int> pair) {
-    return this->blocks[pair.x][pair.y]>0;
+    for (int i=0; i<this->explored.size(); i++) {
+        Pair<int> pos = this->explored[i]->getData();
+        if (pos==pair) return true;
+    }
+    return false;
+    //return this->blocks[pair.x][pair.y]>0;
 }
 
 bool Maze::isExplored(Pair<int> data, Node<Pair<int>>* parent) {
@@ -212,13 +222,13 @@ bool Maze::isDuplicate(Node<Pair<int>>* node) {
 }
 
 bool Maze::allChecked() {
-    for (int i=0; i<this->dimensions.x; i++) {
-        for (int j=0; j<this->dimensions.y; j++) {
-            if (this->blocks[i][j]>0) {
+    for (int i=0; i<dimensions.x; i++) {
+        for (int j=0; j<dimensions.y; j++) {
+            if (blocks[i][j]>0) {
                 std::vector<Pair<int>> neighbors = this->neighbours(Pair<int>(i, j));
                 for (int k=0; k<neighbors.size(); k++) {
                     Pair<int> pos = neighbors[k];
-                    if (this->blocks[pos.x][pos.y]==0) return false;
+                    if (blocks[pos.x][pos.y]==0) return false;
                 }
             }
         }

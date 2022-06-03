@@ -26,8 +26,9 @@ class Maze {
         static int** fillBlocks();
         void print();
         void showAll(int weight);
-        void explore();
-        void zero();
+        static void explore();
+        static void zero();
+        void zeroPath();
         void zero(Node<Pair<int>>* node);
         bool isDuplicate(Node<Pair<int>>* node);
         bool inExplored(Pair<int> pair);

@@ -14,6 +14,7 @@ int main() {
     m->search();
     m->showAll();
     m->clear();
+    //Maze::zero();
     m->shortestPath();
     m->showAll();
     m->clear();
