@@ -1,10 +1,23 @@
 #include "Maze.h"
 
-Maze::Maze() {}
+Maze::Maze() {
+    for (int i=0; i<dimensions.x; i++) {
+        for (int j=0; j<dimensions.y; j++) {
+            if (blocks[i][j]==-3) {
+                this->position = Pair<int>(i, j);
+                blocks[i][j] = 0;
+            }
+            else if (blocks[i][j]==-4) {
+                this->destination = Pair<int>(i, j);
+                blocks[i][j] = 0;
+            }
+        }
+    }
+}
 
-Maze::Maze(std::string path) {
-    this->path = path;
-    this->fillBlocks();
+Maze::Maze(Pair<int> dest, Pair<int> pos) {
+    this->destination = dest;
+    this->position = pos;
 }
 
 Maze::~Maze() {
@@ -57,7 +70,7 @@ void Maze::eraseFrontier() {
     delete this->f;
 }
 
-void Maze::fillBlocks() {
+std::vector<std::string> Maze::fillText(std::string path) {
     std::string text;
     std::ifstream file(path);
     std::vector<std::string> allText;
@@ -65,23 +78,29 @@ void Maze::fillBlocks() {
         allText.push_back(text);
     }
     file.close();
-    this->dimensions.set(allText.size(), allText[0].length());
-    this->blocks = new int*[dimensions.x];
-    for (int i=0; i<dimensions.x; i++) this->blocks[i] = new int[dimensions.y];
+    return allText;
+}
+
+Pair<int> Maze::fillDimensions() {
+    return Pair<int>(text.size(), text[0].length());
+}
+
+int** Maze::fillBlocks() {
+    int** block = new int*[dimensions.x];
+    for (int i=0; i<dimensions.x; i++) block[i] = new int[dimensions.y];
     for (int i=0; i<dimensions.x; i++) {
         for (int j=0; j<dimensions.y; j++) {
-            if (allText[i][j]=='P') {
-                this->position = Pair<int>(i, j);
-                this->blocks[i][j] = 0;
+            if (text[i][j]=='P') {
+                block[i][j] = -3;
             }
-            else if (allText[i][j]=='L') {
-                this->destination.set(i, j);
-                this->blocks[i][j] = 0;
+            else if (text[i][j]=='L') {
+                block[i][j] = -4;
             }
-            else if (allText[i][j]==' ') this->blocks[i][j] = 0;
-            else this->blocks[i][j] = -1;
+            else if (text[i][j]==' ') block[i][j] = 0;
+            else block[i][j] = -1;
         }
     }
+    return block;
 }
 
 void Maze::print() {

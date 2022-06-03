@@ -4,12 +4,13 @@
 #include "AStarFrontier.cpp"
 
 class Maze {
+    public:
+        static std::vector<std::string> text;
+        static int** blocks;
+        static Pair<int> dimensions;
     private:
         int weight = 0;
-        int** blocks;
-        std::string path;
         StackFrontier<int>* f;
-        Pair<int> dimensions;
         Pair<int> destination;
         Pair<int> position;
         std::vector<Node<Pair<int>>*> explored;
@@ -17,10 +18,12 @@ class Maze {
         std::vector<Pair<int>> allSearch;
     public:
         Maze();
-        Maze(std::string path);
+        Maze(Pair<int> dest, Pair<int> pos);
         virtual ~Maze();
         void clear();
-        void fillBlocks();
+        static std::vector<std::string> fillText(std::string path);
+        static Pair<int> fillDimensions();
+        static int** fillBlocks();
         void print();
         void showAll(int weight);
         void explore();
