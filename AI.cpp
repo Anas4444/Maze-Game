@@ -182,6 +182,16 @@ void AI::zero(Node<Coordinate<int>>* node) {
     }
 }
 
+int AI::roadType(Coordinate<int> road)
+{
+    if (AI::blocks[road.x][road.y]==-1) return 5;
+    std::vector<Coordinate<int>> neigh = AI::neighbours4(road);  
+    int n = neigh.size();
+    if (n!=2) return n;
+    if (neigh[0].x-neigh[1].x==0 || neigh[0].y-neigh[1].y==0) return 1;
+    return 2;
+}
+
 void AI::drawPath(int alpha=1) {
     if (this->allPaths.size()>alpha-1) {
         for (int i=0; i<this->allPaths[alpha-1].size(); i++) {
@@ -247,7 +257,7 @@ bool AI::allChecked() {
     for (int i=0; i<AI::dimensions.x; i++) {
         for (int j=0; j<AI::dimensions.y; j++) {
             if (AI::blocks[i][j]>0) {
-                std::vector<Coordinate<int>> neighbors = this->neighbours(Coordinate<int>(i, j));
+                std::vector<Coordinate<int>> neighbors = AI::neighbours8(Coordinate<int>(i, j));
                 for (int k=0; k<neighbors.size(); k++) {
                     Coordinate<int> pos = neighbors[k];
                     if (AI::blocks[pos.x][pos.y]==0) return false;
@@ -258,7 +268,7 @@ bool AI::allChecked() {
     return true;
 }
 
-Coordinate<int> AI::bestPosition(Coordinate<int> loc) {
+Coordinate<int> AI::bestPosition8(Coordinate<int> loc) {
     Coordinate<int> nghb[8] {Coordinate<int>(loc.x+1, loc.y), Coordinate<int>(loc.x-1, loc.y),
                              Coordinate<int>(loc.x, loc.y+1), Coordinate<int>(loc.x, loc.y-1),
                              Coordinate<int>(loc.x+1, loc.y+1), Coordinate<int>(loc.x+1, loc.y-1),
@@ -279,13 +289,43 @@ Coordinate<int> AI::bestPosition(Coordinate<int> loc) {
     return pos;
 }
 
-std::vector<Coordinate<int>> AI::neighbours(Coordinate<int> loc) {
+Coordinate<int> AI::bestPosition4(Coordinate<int> loc) {
+    Coordinate<int> nghb[4] {Coordinate<int>(loc.x+1, loc.y), Coordinate<int>(loc.x-1, loc.y),
+                             Coordinate<int>(loc.x, loc.y+1), Coordinate<int>(loc.x, loc.y-1)};
+    Coordinate<int> pos;
+    int i=0;
+    for (; i<4; i++) {
+        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1) {
+            pos = nghb[i];
+            break;
+        }
+    }
+    for (; i<4; i++) {
+        bool notBlockandInBoard = nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1;
+        if (!notBlockandInBoard) continue;
+        if (AI::blocks[pos.x][pos.y] > AI::blocks[nghb[i].x][nghb[i].y]) pos = nghb[i];
+    }
+    return pos;
+}
+
+std::vector<Coordinate<int>> AI::neighbours8(Coordinate<int> loc) {
     Coordinate<int> nghb[8] {Coordinate<int>(loc.x+1, loc.y), Coordinate<int>(loc.x-1, loc.y),
                              Coordinate<int>(loc.x, loc.y+1), Coordinate<int>(loc.x, loc.y-1),
                              Coordinate<int>(loc.x+1, loc.y+1), Coordinate<int>(loc.x+1, loc.y-1),
                              Coordinate<int>(loc.x-1, loc.y+1), Coordinate<int>(loc.x-1, loc.y-1)}; 
     std::vector<Coordinate<int>> result;
     for (int i=0; i<8; i++) {
+        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1)
+            result.push_back(nghb[i]);
+    }
+    return result;
+}
+
+std::vector<Coordinate<int>> AI::neighbours4(Coordinate<int> loc) {
+    Coordinate<int> nghb[4] {Coordinate<int>(loc.x+1, loc.y), Coordinate<int>(loc.x-1, loc.y),
+                             Coordinate<int>(loc.x, loc.y+1), Coordinate<int>(loc.x, loc.y-1)}; 
+    std::vector<Coordinate<int>> result;
+    for (int i=0; i<4; i++) {
         if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1)
             result.push_back(nghb[i]);
     }
@@ -308,7 +348,7 @@ bool AI::hasPath() {
         Coordinate<int> pos = node->getData();
         AI::blocks[pos.x][pos.y]++;
         //this->explore();
-        std::vector<Coordinate<int>> neighb = neighbours(node->getData());
+        std::vector<Coordinate<int>> neighb = AI::neighbours8(node->getData());
         for (int i=0; i<neighb.size(); i++) {
             if (!inExplored(neighb[i]) && !this->frontier->inFrontier(neighb[i])) {
                 Node<Coordinate<int>>* newNode = new Node(neighb[i], node);
@@ -341,7 +381,7 @@ void AI::shortestPath() {
         Coordinate<int> pos = node->getData();
         AI::blocks[pos.x][pos.y]++;
         //this->explore();
-        std::vector<Coordinate<int>> neighb = neighbours(node->getData());
+        std::vector<Coordinate<int>> neighb = AI::neighbours8(node->getData());
         for (int i=0; i<neighb.size(); i++) {
             if (!inExplored(neighb[i]) && !this->frontier->inFrontier(neighb[i])) {
                 Node<Coordinate<int>>* newNode = new Node(neighb[i], node);
@@ -410,7 +450,7 @@ void AI::alphaShortestPath(int w = 0) {
         AI::blocks[pos.x][pos.y]++;
         this->explored.push_back(node);
         this->explore();
-        std::vector<Coordinate<int>> neighb = neighbours(node->getData());
+        std::vector<Coordinate<int>> neighb = AI::neighbours8(node->getData());
         for (int i=0; i<neighb.size(); i++) {
             if (!isExplored(neighb[i], node)) {
                 Node<Coordinate<int>>* newNode = new Node(neighb[i], node);
@@ -429,9 +469,9 @@ void AI::search() {
     while (true) {
         int n = this->allSearch.size();
         this->position = this->allSearch[n-1];
-        Coordinate<int> newPos = this->bestPosition(position);
+        Coordinate<int> newPos = AI::bestPosition8(position);
         if (AI::blocks[newPos.x][newPos.y]>0 && AI::blocks[position.x][position.y]==1) {
-            if (this->allChecked()) break;
+            if (AI::allChecked()) break;
         }
         AI::blocks[newPos.x][newPos.y]++;
         this->explore();
@@ -452,9 +492,9 @@ void AI::multiSearch() {
         for (auto bot : AI::bots) {
             int n = bot->allSearch.size();
             bot->position = bot->allSearch[n-1];
-            Coordinate<int> newPos = bot->bestPosition(bot->position);
+            Coordinate<int> newPos = AI::bestPosition8(bot->position);
             if (AI::blocks[newPos.x][newPos.y]>0 && AI::blocks[bot->position.x][bot->position.y]==1) {
-                if (bot->allChecked()) {
+                if (AI::allChecked()) {
                     b = false;
                     break;
                 }

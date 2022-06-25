@@ -22,16 +22,26 @@ class AI {
         AI(Coordinate<int> pos);
         AI(Coordinate<int> dest, Coordinate<int> pos);
         virtual ~AI();
-        void setPosition(Coordinate<int> pos);
-        void setDestination(Coordinate<int> dest);
-        void clear();
+
         static std::vector<std::string> fillText(std::string path);
         static Coordinate<int> fillDimensions();
         static int** fillBlocks();
-        void print();
-        void showAll(int weight);
         static void explore();
         static void zero();
+        static void draw(Node<Coordinate<int>>* node);
+        static int roadType(Coordinate<int> road);
+        static std::vector<Coordinate<int>> neighbours8(Coordinate<int> location);
+        static std::vector<Coordinate<int>> neighbours4(Coordinate<int> location);
+        static Coordinate<int> bestPosition8(Coordinate<int> location);
+        static Coordinate<int> bestPosition4(Coordinate<int> location);
+        static bool allChecked();
+        static void multiSearch();
+
+        void setPosition(Coordinate<int> pos);
+        void setDestination(Coordinate<int> dest);
+        void clear();
+        void print();
+        void showAll(int weight);
         void zeroPath();
         void zero(Node<Coordinate<int>>* node);
         bool isDuplicate(Node<Coordinate<int>>* node);
@@ -39,15 +49,13 @@ class AI {
         bool isExplored(Coordinate<int> data, Node<Coordinate<int>>* parent);
         void drawPath(int i);
         void draw();
-        void draw(Node<Coordinate<int>>* node);
-        std::vector<Coordinate<int>> neighbours(Coordinate<int> location);
-        Coordinate<int> bestPosition(Coordinate<int> location);
+        
+
         bool hasPath();
         void shortestPath();
         void alphaShortestPath(int w);
-        bool allChecked();
         void search();
-        static void multiSearch();
+        
         void eraseAllSearch();
         void eraseAllPaths();
         void eraseExplored();

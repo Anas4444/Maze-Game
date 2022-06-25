@@ -9,13 +9,19 @@ Coordinate<int> AI::dimensions = AI::fillDimensions();
 int** AI::blocks = AI::fillBlocks();
 
 int main() {
+    for (int i=0; i<AI::dimensions.x; i++) {
+        for (int j=0; j<AI::dimensions.y; j++) {
+            std::cout << AI::roadType(Coordinate<int>(i, j));
+        }
+        std::cout << "\n";
+    }
     AI* m = new AI(Coordinate<int>(1, 0));
     AI* m1 = new AI(Coordinate<int>(3, 1));
     AI* m2 = new AI(Coordinate<int>(3, 8));
     //AI::multiSearch();
-    m->search();
+    /*m->search();
     AI::explore();
-    m->clear();
+    m->clear();*/
 
     /*m->shortestPath();
     m->showAll();*/
