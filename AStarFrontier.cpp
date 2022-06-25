@@ -1,11 +1,16 @@
 #include "AStarFrontier.h"
 
 template <class T>
-AStarFrontier<T>::AStarFrontier(Coordinate<T>* dest, int rows, int colums) {
-    this->rows = rows;
-    this->colums = colums;
+AStarFrontier<T>::AStarFrontier(Coordinate<T>* dest, Coordinate<int> dim) {
+    this->dimensions = dim;
     this->destination = new Coordinate<T>(*dest);
     this->fillhBoard();
+}
+
+template<class T>
+AStarFrontier<T>::~AStarFrontier()
+{
+    
 }
 
 template <class T>
@@ -39,18 +44,18 @@ Node<Coordinate<T>>* AStarFrontier<T>::remove() {
         Node<Coordinate<T>>* Bxy = StackFrontier<T>::frontier->at(i);
         Coordinate<T> xy = Bxy->getData();
         Coordinate<T> Pxy = p->getData();
-        if (GreedyFrontier<T>::hBoard[Pxy.x][Pxy.y]+p->getSteps() > GreedyFrontier<T>::hBoard[xy.x][xy.y]+Bxy->getSteps()) {
+        if (GreedyFrontier<T>::hBoard[Pxy.y][Pxy.x]+p->getSteps() > GreedyFrontier<T>::hBoard[xy.y][xy.x]+Bxy->getSteps()) {
             p->setNode(*Bxy);
             f = i;
         }
-        else if (GreedyFrontier<T>::hBoard[Pxy.x][Pxy.y]+p->getSteps() == GreedyFrontier<T>::hBoard[xy.x][xy.y]+Bxy->getSteps()) {
+        else if (GreedyFrontier<T>::hBoard[Pxy.y][Pxy.x]+p->getSteps() == GreedyFrontier<T>::hBoard[xy.y][xy.x]+Bxy->getSteps()) {
             if (this->priorityD)
                 if (p->getSteps() > Bxy->getSteps()) {
                     p->setNode(*Bxy);
                     f = i;
                 }
             else {
-                if (GreedyFrontier<T>::hBoard[Pxy.x][Pxy.y] > GreedyFrontier<T>::hBoard[xy.x][xy.y]) {
+                if (GreedyFrontier<T>::hBoard[Pxy.y][Pxy.x] > GreedyFrontier<T>::hBoard[xy.y][xy.x]) {
                     p->setNode(*Bxy);
                     f = i;
                 }

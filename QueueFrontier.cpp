@@ -6,3 +6,14 @@ Node<Coordinate<T>>* QueueFrontier<T>::remove() {
     StackFrontier<T>::frontier->erase(StackFrontier<T>::frontier->begin());
     return p;
 }
+template<class T>
+QueueFrontier<T>::QueueFrontier()
+{
+    
+}
+
+template<class T>
+QueueFrontier<T>::~QueueFrontier()
+{
+    
+}

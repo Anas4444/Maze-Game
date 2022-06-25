@@ -6,14 +6,14 @@ template <class T>
 class GreedyFrontier : public QueueFrontier<T> {
     protected:
         Coordinate<T>* destination;
-        int rows;
-        int colums;
+        Coordinate<int> dimensions;
         int** hBoard;
     public:
         GreedyFrontier();
-        GreedyFrontier(Coordinate<T>* dest, int rows, int colums);
+        GreedyFrontier(Coordinate<int>* dest, Coordinate<int> dim);
         virtual ~GreedyFrontier();
-        int heuricity(int Ax, int Ay, Coordinate<T>* B);
+        int heuricity8(Coordinate<int> position, Coordinate<int>* destination);
+        int heuricity4(Coordinate<int> position, Coordinate<int>* destination);
         void fillhBoard();
         void printHBoard();
         int distance(Coordinate<T> p);

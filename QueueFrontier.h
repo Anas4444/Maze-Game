@@ -4,5 +4,7 @@
 template <class T>
 class QueueFrontier : public StackFrontier<T> {
     public:
+        QueueFrontier();
+        virtual ~QueueFrontier();
         Node<Coordinate<T>>* remove();
 };

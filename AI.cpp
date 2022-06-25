@@ -2,14 +2,14 @@
 
 AI::AI() {
     AI::bots.push_back(this);
-    for (int i=0; i<AI::dimensions.x; i++) {
-        for (int j=0; j<AI::dimensions.y; j++) {
+    for (int i=0; i<AI::dimensions.y; i++) {
+        for (int j=0; j<AI::dimensions.x; j++) {
             if (AI::blocks[i][j]==-3) {
-                this->position = Coordinate<int>(i, j);
+                this->position = Coordinate<int>(j, i);
                 AI::blocks[i][j] = 0;
             }
             else if (AI::blocks[i][j]==-4) {
-                this->destination = Coordinate<int>(i, j);
+                this->destination = Coordinate<int>(j, i);
                 AI::blocks[i][j] = 0;
             }
         }
@@ -19,9 +19,10 @@ AI::AI() {
 AI::AI(Coordinate<int> pos) {
     AI::bots.push_back(this);
     this->position = pos;
+    this->destination = Coordinate<int>(8, 3);
 }
 
-AI::AI(Coordinate<int> dest, Coordinate<int> pos) {
+AI::AI(Coordinate<int> pos, Coordinate<int> dest) {
     AI::bots.push_back(this);
     this->destination = dest;
     this->position = pos;
@@ -39,7 +40,9 @@ AI::~AI() {
             break;
         }
     }
-    this->clear();
+    this->clearPathFinding();
+    this->clearSearch();
+
 }
 
 void AI::setPosition(Coordinate<int> pos)
@@ -52,30 +55,33 @@ void AI::setDestination(Coordinate<int> dest)
     this->destination = dest;
 }
 
-void AI::clear() {
+void AI::clearSearch() {
+    int n = this->allSearch.size();
+    if (n==0) return;
+    this->allSearch.clear();
+    this->allSearch.shrink_to_fit();
+}
+
+void AI::clearPathFinding() {
     this->eraseExplored();
     this->eraseFrontier();
-    this->eraseAllSearch();
     this->eraseAllPaths();
     this->weight = 0;
 }
 
 void AI::eraseExplored() {
-    for (int i=0; i<this->explored.size(); i++) delete this->explored[i];
+    //for (int i=0; i<this->explored.size(); i++) delete this->explored[i];
     this->explored.clear();
     this->explored.shrink_to_fit();
 }
 
 void AI::eraseBlocks() {
-    for (int i=0; i<AI::dimensions.x; i++) delete[] AI::blocks[i];
+    for (int i=0; i<AI::dimensions.y; i++) delete[] AI::blocks[i];
     delete[] AI::blocks;
 }
 
-void AI::eraseAllSearch() {
-    int n = this->allSearch.size();
-    if (n==0) return;
-    this->allSearch.clear();
-    this->allSearch.shrink_to_fit();
+void AI::eraseFrontier() {
+    delete this->frontier;
 }
 
 void AI::eraseAllPaths() {
@@ -84,16 +90,12 @@ void AI::eraseAllPaths() {
     for (int i=0; i<n; i++) {
         int m = this->allPaths[i].size();
         if (m==0) continue;
-        delete this->allPaths[i][m-1];
+        //delete this->allPaths[i][m-1];
         this->allPaths[i].clear();
         this->allPaths[i].shrink_to_fit();
     }
     this->allPaths.clear();
     this->allPaths.shrink_to_fit();
-}
-
-void AI::eraseFrontier() {
-    delete this->frontier;
 }
 
 std::vector<std::string> AI::fillText(std::string path) {
@@ -108,14 +110,14 @@ std::vector<std::string> AI::fillText(std::string path) {
 }
 
 Coordinate<int> AI::fillDimensions() {
-    return Coordinate<int>(AI::text.size(), AI::text[0].length());
+    return Coordinate<int>(AI::text[0].length(), AI::text.size());
 }
 
 int** AI::fillBlocks() {
-    int** block = new int*[dimensions.x];
-    for (int i=0; i<AI::dimensions.x; i++) block[i] = new int[AI::dimensions.y];
-    for (int i=0; i<AI::dimensions.x; i++) {
-        for (int j=0; j<AI::dimensions.y; j++) {
+    int** block = new int*[dimensions.y];
+    for (int i=0; i<AI::dimensions.y; i++) block[i] = new int[AI::dimensions.x];
+    for (int i=0; i<AI::dimensions.y; i++) {
+        for (int j=0; j<AI::dimensions.x; j++) {
             if (AI::text[i][j]!='&') block[i][j] = 0;
             else block[i][j] = -1;
         }
@@ -124,11 +126,11 @@ int** AI::fillBlocks() {
 }
 
 void AI::print() {
-    for (int i=0; i<AI::dimensions.x; i++) {
-        for (int j=0; j<AI::dimensions.y; j++) {
+    for (int i=0; i<AI::dimensions.y; i++) {
+        for (int j=0; j<AI::dimensions.x; j++) {
             if (AI::blocks[i][j]==-1) std::cout << '&';
-            else if (this->position==Coordinate(i, j)) std::cout << 'P'; 
-            else if (this->destination==Coordinate(i, j)) std::cout << 'L';
+            else if (this->position==Coordinate(j, i)) std::cout << 'P'; 
+            else if (this->destination==Coordinate(j, i)) std::cout << 'L';
             else if (AI::blocks[i][j]>=0) std::cout << ' ';
             else if (AI::blocks[i][j]==-2) std::cout << '*';
         }
@@ -147,8 +149,8 @@ void AI::showAll(int w=0) {
 }
 
 void AI::explore() {
-    for (int i=0; i<AI::dimensions.x; i++) {
-        for (int j=0; j<AI::dimensions.y; j++) {
+    for (int i=0; i<AI::dimensions.y; i++) {
+        for (int j=0; j<AI::dimensions.x; j++) {
             if (AI::blocks[i][j]==-1) std::cout << '&';
             else std::cout << AI::blocks[i][j];
         }
@@ -158,16 +160,16 @@ void AI::explore() {
 }
 
 void AI::zeroPath() {
-    for (int i=0; i<AI::dimensions.x; i++) {
-        for (int j=0; j<AI::dimensions.y; j++) {
+    for (int i=0; i<AI::dimensions.y; i++) {
+        for (int j=0; j<AI::dimensions.x; j++) {
             if (AI::blocks[i][j]==-2) AI::blocks[i][j]=0;
         }
     }
 }
 
 void AI::zero() {
-    for (int i=0; i<AI::dimensions.x; i++) {
-        for (int j=0; j<AI::dimensions.y; j++) {
+    for (int i=0; i<AI::dimensions.y; i++) {
+        for (int j=0; j<AI::dimensions.x; j++) {
             if (AI::blocks[i][j]>0 || AI::blocks[i][j]==-2) AI::blocks[i][j]=0;
         }
     }
@@ -177,26 +179,31 @@ void AI::zero(Node<Coordinate<int>>* node) {
     Node<Coordinate<int>>* p = node;
     while (p != nullptr) {
         Coordinate<int> pos = p->getData();
-        AI::blocks[pos.x][pos.y] = 0;
+        AI::blocks[pos.y][pos.x] = 0;
         p = p->parent;
     }
 }
 
 int AI::roadType(Coordinate<int> road)
 {
-    if (AI::blocks[road.x][road.y]==-1) return 5;
+    if (AI::blocks[road.y][road.x]==-1) return 9;
     std::vector<Coordinate<int>> neigh = AI::neighbours4(road);  
     int n = neigh.size();
-    if (n!=2) return n;
-    if (neigh[0].x-neigh[1].x==0 || neigh[0].y-neigh[1].y==0) return 1;
-    return 2;
+    if (n>2) return n+4;
+    if (n<=1) return n;
+    if (road.y-neigh[0].y==0 && road.x-neigh[1].x==0) {
+        if (neigh[0].y-neigh[1].y>0) return 2;
+        else return 3;
+    }
+    if (road.y-neigh[0].y==0 && road.x-neigh[1].x==0 || road.x-neigh[0].x==0 && road.y-neigh[1].y==0) return 2;
+    return 1;
 }
 
 void AI::drawPath(int alpha=1) {
     if (this->allPaths.size()>alpha-1) {
         for (int i=0; i<this->allPaths[alpha-1].size(); i++) {
             Coordinate<int> pos = this->allPaths[alpha-1][i]->getData();
-            AI::blocks[pos.x][pos.y]=-2;
+            AI::blocks[pos.y][pos.x]=-2;
         }
     }
 }
@@ -205,7 +212,7 @@ void AI::draw() {
     for (int i=0; i<this->allPaths.size(); i++) {
         for (int j=0; j<this->allPaths[i].size(); j++) {
             Coordinate<int> pos = this->allPaths[i][j]->getData();
-            AI::blocks[pos.x][pos.y]=-2;
+            AI::blocks[pos.y][pos.x]=-2;
         }
     }
 }
@@ -214,7 +221,7 @@ void AI::draw(Node<Coordinate<int>>* node) {
     Node<Coordinate<int>>* p = node;
     while (p != nullptr) {
         Coordinate<int> pos = p->getData();
-        AI::blocks[pos.x][pos.y] = -2;
+        AI::blocks[pos.y][pos.x] = -2;
         p = p->parent;
     }
 } 
@@ -254,13 +261,13 @@ bool AI::isDuplicate(Node<Coordinate<int>>* node) {
 }
 
 bool AI::allChecked() {
-    for (int i=0; i<AI::dimensions.x; i++) {
-        for (int j=0; j<AI::dimensions.y; j++) {
+    for (int i=0; i<AI::dimensions.y; i++) {
+        for (int j=0; j<AI::dimensions.x; j++) {
             if (AI::blocks[i][j]>0) {
-                std::vector<Coordinate<int>> neighbors = AI::neighbours8(Coordinate<int>(i, j));
+                std::vector<Coordinate<int>> neighbors = AI::neighbours4(Coordinate<int>(j, i));
                 for (int k=0; k<neighbors.size(); k++) {
                     Coordinate<int> pos = neighbors[k];
-                    if (AI::blocks[pos.x][pos.y]==0) return false;
+                    if (AI::blocks[pos.y][pos.x]==0) return false;
                 }
             }
         }
@@ -276,15 +283,15 @@ Coordinate<int> AI::bestPosition8(Coordinate<int> loc) {
     Coordinate<int> pos;
     int i=0;
     for (; i<8; i++) {
-        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1) {
+        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].y][nghb[i].x]!=-1) {
             pos = nghb[i];
             break;
         }
     }
     for (; i<8; i++) {
-        bool notBlockandInBoard = nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1;
+        bool notBlockandInBoard = nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].y][nghb[i].x]!=-1;
         if (!notBlockandInBoard) continue;
-        if (AI::blocks[pos.x][pos.y] > AI::blocks[nghb[i].x][nghb[i].y]) pos = nghb[i];
+        if (AI::blocks[pos.y][pos.x] > AI::blocks[nghb[i].y][nghb[i].x]) pos = nghb[i];
     }
     return pos;
 }
@@ -295,15 +302,15 @@ Coordinate<int> AI::bestPosition4(Coordinate<int> loc) {
     Coordinate<int> pos;
     int i=0;
     for (; i<4; i++) {
-        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1) {
+        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].y][nghb[i].x]!=-1) {
             pos = nghb[i];
             break;
         }
     }
     for (; i<4; i++) {
-        bool notBlockandInBoard = nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1;
+        bool notBlockandInBoard = nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].y][nghb[i].x]!=-1;
         if (!notBlockandInBoard) continue;
-        if (AI::blocks[pos.x][pos.y] > AI::blocks[nghb[i].x][nghb[i].y]) pos = nghb[i];
+        if (AI::blocks[pos.y][pos.x] > AI::blocks[nghb[i].y][nghb[i].x]) pos = nghb[i];
     }
     return pos;
 }
@@ -315,7 +322,7 @@ std::vector<Coordinate<int>> AI::neighbours8(Coordinate<int> loc) {
                              Coordinate<int>(loc.x-1, loc.y+1), Coordinate<int>(loc.x-1, loc.y-1)}; 
     std::vector<Coordinate<int>> result;
     for (int i=0; i<8; i++) {
-        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1)
+        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].y][nghb[i].x]!=-1)
             result.push_back(nghb[i]);
     }
     return result;
@@ -326,14 +333,15 @@ std::vector<Coordinate<int>> AI::neighbours4(Coordinate<int> loc) {
                              Coordinate<int>(loc.x, loc.y+1), Coordinate<int>(loc.x, loc.y-1)}; 
     std::vector<Coordinate<int>> result;
     for (int i=0; i<4; i++) {
-        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].x][nghb[i].y]!=-1)
+        if (nghb[i].x < AI::dimensions.x && nghb[i].y < AI::dimensions.y && nghb[i].x >= 0 && nghb[i].y >= 0 && AI::blocks[nghb[i].y][nghb[i].x]!=-1)
             result.push_back(nghb[i]);
     }
     return result;
 }
 
 bool AI::hasPath() {
-    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions.x, AI::dimensions.y);
+    this->clearPathFinding();
+    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions);
     std::vector<Node<Coordinate<int>>*> path;
     //this->frontier->printHBoard();
     Node<Coordinate<int>>* node = new Node<Coordinate<int>>(this->position);
@@ -346,9 +354,9 @@ bool AI::hasPath() {
         //node->printOne();
         //std::cout << " | distance : " << this->frontier->distance(node->getData()) << "\n\n";
         Coordinate<int> pos = node->getData();
-        AI::blocks[pos.x][pos.y]++;
+        AI::blocks[pos.y][pos.x]++;
         //this->explore();
-        std::vector<Coordinate<int>> neighb = AI::neighbours8(node->getData());
+        std::vector<Coordinate<int>> neighb = AI::neighbours4(node->getData());
         for (int i=0; i<neighb.size(); i++) {
             if (!inExplored(neighb[i]) && !this->frontier->inFrontier(neighb[i])) {
                 Node<Coordinate<int>>* newNode = new Node(neighb[i], node);
@@ -357,17 +365,15 @@ bool AI::hasPath() {
         }
     }
     if (node->getData()!=destination) {
-        this->clear();
         return false;
     }
-    this->clear();
     return true;
 }
 
 void AI::shortestPath() {
-    this->clear();
+    this->clearPathFinding();
     this->weight = 1;
-    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions.x, AI::dimensions.y);
+    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions);
     std::vector<Node<Coordinate<int>>*> path;
     this->frontier->printHBoard();
     Node<Coordinate<int>>* node = new Node<Coordinate<int>>(this->position);
@@ -376,12 +382,12 @@ void AI::shortestPath() {
         //this->frontier->printOne();
         node = this->frontier->remove();
         //std::cout << "Best One : ";
-        node->printOne();
+        //node->printOne();
         //std::cout << " | distance : " << frontier->distance(node->getData()) << "\n\n";
         Coordinate<int> pos = node->getData();
-        AI::blocks[pos.x][pos.y]++;
+        AI::blocks[pos.y][pos.x]++;
         //this->explore();
-        std::vector<Coordinate<int>> neighb = AI::neighbours8(node->getData());
+        std::vector<Coordinate<int>> neighb = AI::neighbours4(node->getData());
         for (int i=0; i<neighb.size(); i++) {
             if (!inExplored(neighb[i]) && !this->frontier->inFrontier(neighb[i])) {
                 Node<Coordinate<int>>* newNode = new Node(neighb[i], node);
@@ -404,21 +410,21 @@ void AI::alphaShortestPath(int w = 0) {
         this->weight = 0;
         return;
     }
-    this->clear();
+    this->clearPathFinding();
     this->weight = w;
     std::vector<Node<Coordinate<int>>*> allNodes;
-    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions.x, AI::dimensions.y);
+    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions);
     this->frontier->printHBoard();
     Node<Coordinate<int>>* node = new Node<Coordinate<int>>(this->position);
     this->frontier->add(node);
     int k=0;
     int d=0;
     while(!this->frontier->empty() && (k<w || w<=0) && d<10) {
-        //f->printOne();
+        //frontier->printOne();
         node = this->frontier->remove();
         //std::cout << "Best One : ";
         //node->printOne();
-        //std::cout << " | distance : " << f->distance(node->getData()) << "\n\n";
+        //std::cout << " | distance : " << frontier->distance(node->getData()) << "\n\n";
         while (node->getData()==destination && (k<w || w<=0)) {
             if (!isDuplicate(node)) {
                 node->print();
@@ -435,7 +441,7 @@ void AI::alphaShortestPath(int w = 0) {
                 k++;
 
                 Coordinate<int> pos = node->getData();
-                AI::blocks[pos.x][pos.y]++;
+                AI::blocks[pos.y][pos.x]++;
                 this->explored.push_back(node);
             }
             d++;
@@ -447,10 +453,10 @@ void AI::alphaShortestPath(int w = 0) {
             //std::cout << " | distance : " << this->frontier->distance(node->getData()) << "\n\n";
         }
         Coordinate<int> pos = node->getData();
-        AI::blocks[pos.x][pos.y]++;
+        AI::blocks[pos.y][pos.x]++;
         this->explored.push_back(node);
-        this->explore();
-        std::vector<Coordinate<int>> neighb = AI::neighbours8(node->getData());
+        AI::explore();
+        std::vector<Coordinate<int>> neighb = AI::neighbours4(node->getData());
         for (int i=0; i<neighb.size(); i++) {
             if (!isExplored(neighb[i], node)) {
                 Node<Coordinate<int>>* newNode = new Node(neighb[i], node);
@@ -463,17 +469,18 @@ void AI::alphaShortestPath(int w = 0) {
 }
 
 void AI::search() {
+    clearSearch();
     this->allSearch.push_back(position);
-    AI::blocks[position.x][position.y]++;
-    this->explore();
+    AI::blocks[position.y][position.x]++;
+    AI::explore();
     while (true) {
         int n = this->allSearch.size();
         this->position = this->allSearch[n-1];
-        Coordinate<int> newPos = AI::bestPosition8(position);
-        if (AI::blocks[newPos.x][newPos.y]>0 && AI::blocks[position.x][position.y]==1) {
+        Coordinate<int> newPos = AI::bestPosition4(position);
+        if (AI::blocks[newPos.y][newPos.x]>0 && AI::blocks[position.y][position.x]==1) {
             if (AI::allChecked()) break;
         }
-        AI::blocks[newPos.x][newPos.y]++;
+        AI::blocks[newPos.y][newPos.x]++;
         this->explore();
         this->position = newPos;
         this->allSearch.push_back(newPos);
@@ -483,25 +490,25 @@ void AI::search() {
 void AI::multiSearch() {
     for (auto bot : AI::bots) {
         bot->allSearch.push_back(bot->position);
-        AI::blocks[bot->position.x][bot->position.y]++;
+        AI::blocks[bot->position.y][bot->position.x]++;
         std::cout << "bot : " << bot << std::endl;
-        bot->explore();
+        AI::explore();
     }
     int b = true;
     while (b) {
         for (auto bot : AI::bots) {
             int n = bot->allSearch.size();
             bot->position = bot->allSearch[n-1];
-            Coordinate<int> newPos = AI::bestPosition8(bot->position);
-            if (AI::blocks[newPos.x][newPos.y]>0 && AI::blocks[bot->position.x][bot->position.y]==1) {
+            Coordinate<int> newPos = AI::bestPosition4(bot->position);
+            if (AI::blocks[newPos.y][newPos.x]>0 && AI::blocks[bot->position.y][bot->position.x]>=1) {
                 if (AI::allChecked()) {
                     b = false;
                     break;
                 }
             }
-            AI::blocks[newPos.x][newPos.y]++;
+            AI::blocks[newPos.y][newPos.x]++;
             std::cout << "bot : " << bot << std::endl;
-            bot->explore();
+            AI::explore();
             bot->position = newPos;
             bot->allSearch.push_back(newPos);
         }

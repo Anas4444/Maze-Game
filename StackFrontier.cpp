@@ -7,7 +7,8 @@ StackFrontier<T>::StackFrontier() {
 
 template <class T>
 StackFrontier<T>::~StackFrontier() {
-    for (int i=0; i<frontier->size(); i++) delete frontier->at(i);
+    //for (int i=0; i<frontier->size(); i++) delete frontier->at(i);
+    frontier->clear();
     delete frontier;
 }
 

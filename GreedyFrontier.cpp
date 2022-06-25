@@ -2,24 +2,22 @@
 
 template <class T>
 GreedyFrontier<T>::GreedyFrontier() {
-    this->rows = 6;
-    this->colums = 10;
+    this->dimensions = Coordinate<int>(10, 6);
     this->destination = new Coordinate<T>(0, 8);
     this->fillhBoard();
 }
 
 template <class T>
-GreedyFrontier<T>::GreedyFrontier(Coordinate<T>* dest, int rows, int colums) {
+GreedyFrontier<T>::GreedyFrontier(Coordinate<int>* dest, Coordinate<int> dim) {
     this->destination = dest;
-    this->rows = rows;
-    this->colums = colums;
+    this->dimensions = dim;
     this->fillhBoard();
 }
 
 template <class T>
 GreedyFrontier<T>::~GreedyFrontier() {
     delete destination;
-    for (int i=0; i<rows; i++) {
+    for (int i=0; i<dimensions.y; i++) {
         delete[] hBoard[i];
     }
     delete[] hBoard;
@@ -27,19 +25,19 @@ GreedyFrontier<T>::~GreedyFrontier() {
 
 template <class T>
 void GreedyFrontier<T>::fillhBoard() {
-    hBoard = new int*[rows];
-    for (int i=0; i<rows; i++) hBoard[i] = new int[colums];
-    for (int i=0; i<rows; i++) {
-        for (int j=0; j<colums; j++) {
-            hBoard[i][j] = heuricity(i, j, destination);
+    hBoard = new int*[dimensions.y];
+    for (int i=0; i<dimensions.y; i++) hBoard[i] = new int[dimensions.x];
+    for (int i=0; i<dimensions.y; i++) {
+        for (int j=0; j<dimensions.x; j++) {
+            hBoard[i][j] = heuricity4(Coordinate<int>(j, i), destination);
         }
     }
 }
 
 template <class T>
 void GreedyFrontier<T>::printHBoard() {
-    for (int i=0; i<rows; i++) {
-        for (int j=0; j<colums; j++) {
+    for (int i=0; i<dimensions.y; i++) {
+        for (int j=0; j<dimensions.x; j++) {
             std::cout << hBoard[i][j];
         }
         std::cout << "\n";
@@ -49,16 +47,26 @@ void GreedyFrontier<T>::printHBoard() {
 
 template <class T>
 int GreedyFrontier<T>::distance(Coordinate<T> p) {
-    return this->hBoard[p.x][p.y];
+    return this->hBoard[p.y][p.x];
 }
 
 template <class T>
-int GreedyFrontier<T>::heuricity(int Ax, int Ay, Coordinate<T>* B) {
+int GreedyFrontier<T>::heuricity8(Coordinate<int> A, Coordinate<int>* B) {
     //std::cout << "destination: " << *B << std::endl;
-    int d1 = std::abs(Ay - B->y);
-    int d2 = std::abs(Ax - B->x);
-    if (d1 < d2) return d1 + std::abs(d1+Ax - B->x);
-    return d2 + std::abs(d2+Ay - B->y);
+    int d1 = std::abs(A.y - B->y);
+    int d2 = std::abs(A.x - B->x);
+    if (d1 < d2) {
+        if (A.x>B->x) return d1 + std::abs(A.x-d1 - B->x);
+        return d1 + std::abs(d1+A.x - B->x);
+    }
+    if (A.y>B->y) return d2 + std::abs(A.y-d2 - B->y);
+    return d2 + std::abs(d2+A.y - B->y);
+}
+
+template<class T>
+int GreedyFrontier<T>::heuricity4(Coordinate<int> A, Coordinate<int>* B)
+{
+   return std::abs(A.y - B->y) + std::abs(A.x - B->x); 
 }
 
 template <class T>
@@ -69,7 +77,7 @@ Node<Coordinate<T>>* GreedyFrontier<T>::remove() {
         Node<Coordinate<T>>* Bxy = StackFrontier<T>::frontier->at(i);
         Coordinate<T> xy = Bxy->getData();
         Coordinate<T> Pxy = p->getData();
-        if (hBoard[Pxy.x][Pxy.y] > hBoard[xy.x][xy.y]) {
+        if (hBoard[Pxy.y][Pxy.x] > hBoard[xy.y][xy.x]) {
             p->setNode(*Bxy);
             f = i;
         }

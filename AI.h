@@ -9,10 +9,12 @@ class AI {
         static std::vector<std::string> text;
         static int** blocks;
         static Coordinate<int> dimensions;
+
     private:
         int weight = 0;
+        
         StackFrontier<int>* frontier;
-        Coordinate<int> destination;
+        Coordinate<int> destination;        
         Coordinate<int> position;
         std::vector<Node<Coordinate<int>>*> explored;
         std::vector<std::vector<Node<Coordinate<int>>*>> allPaths;
@@ -20,7 +22,7 @@ class AI {
     public:
         AI();
         AI(Coordinate<int> pos);
-        AI(Coordinate<int> dest, Coordinate<int> pos);
+        AI(Coordinate<int> pos, Coordinate<int> dest);
         virtual ~AI();
 
         static std::vector<std::string> fillText(std::string path);
@@ -39,7 +41,8 @@ class AI {
 
         void setPosition(Coordinate<int> pos);
         void setDestination(Coordinate<int> dest);
-        void clear();
+        void clearPathFinding();
+        void clearSearch();
         void print();
         void showAll(int weight);
         void zeroPath();
@@ -56,7 +59,6 @@ class AI {
         void alphaShortestPath(int w);
         void search();
         
-        void eraseAllSearch();
         void eraseAllPaths();
         void eraseExplored();
         void eraseFrontier();
