@@ -4,12 +4,12 @@ template <class T>
 GreedyFrontier<T>::GreedyFrontier() {
     this->rows = 6;
     this->colums = 10;
-    this->destination = new Pair<T>(0, 8);
+    this->destination = new Coordinate<T>(0, 8);
     this->fillhBoard();
 }
 
 template <class T>
-GreedyFrontier<T>::GreedyFrontier(Pair<T>* dest, int rows, int colums) {
+GreedyFrontier<T>::GreedyFrontier(Coordinate<T>* dest, int rows, int colums) {
     this->destination = dest;
     this->rows = rows;
     this->colums = colums;
@@ -48,12 +48,12 @@ void GreedyFrontier<T>::printHBoard() {
 }
 
 template <class T>
-int GreedyFrontier<T>::distance(Pair<T> p) {
+int GreedyFrontier<T>::distance(Coordinate<T> p) {
     return this->hBoard[p.x][p.y];
 }
 
 template <class T>
-int GreedyFrontier<T>::heuricity(int Ax, int Ay, Pair<T>* B) {
+int GreedyFrontier<T>::heuricity(int Ax, int Ay, Coordinate<T>* B) {
     //std::cout << "destination: " << *B << std::endl;
     int d1 = std::abs(Ay - B->y);
     int d2 = std::abs(Ax - B->x);
@@ -62,13 +62,13 @@ int GreedyFrontier<T>::heuricity(int Ax, int Ay, Pair<T>* B) {
 }
 
 template <class T>
-Node<Pair<T>>* GreedyFrontier<T>::remove() {
-    Node<Pair<T>>* p = new Node<Pair<T>>(*(StackFrontier<T>::frontier->at(0)));
+Node<Coordinate<T>>* GreedyFrontier<T>::remove() {
+    Node<Coordinate<T>>* p = new Node<Coordinate<T>>(*(StackFrontier<T>::frontier->at(0)));
     int f = 0;
     for (int i = 0; i<StackFrontier<T>::frontier->size(); i++) {
-        Node<Pair<T>>* Bxy = StackFrontier<T>::frontier->at(i);
-        Pair<T> xy = Bxy->getData();
-        Pair<T> Pxy = p->getData();
+        Node<Coordinate<T>>* Bxy = StackFrontier<T>::frontier->at(i);
+        Coordinate<T> xy = Bxy->getData();
+        Coordinate<T> Pxy = p->getData();
         if (hBoard[Pxy.x][Pxy.y] > hBoard[xy.x][xy.y]) {
             p->setNode(*Bxy);
             f = i;

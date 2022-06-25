@@ -4,7 +4,7 @@
 
 struct NodeG {
         Data data;
-        Pair<int> position;
+        Coordinate<int> position;
         std::vector<NodeG*>* points;
         std::vector<NodeG*> fullpt;
         NodeG* parent;
@@ -12,11 +12,11 @@ struct NodeG {
         int steps;
 
         NodeG();
-        NodeG(Pair<int> pos);
-        NodeG(Pair<int> pos, NodeG* p);
-        NodeG(Data d, Pair<int> pos);
-        NodeG(Data d, Pair<int> pos, std::vector<NodeG*>* p);
-        NodeG(Data d, Pair<int> pos, NodeG* p);
+        NodeG(Coordinate<int> pos);
+        NodeG(Coordinate<int> pos, NodeG* p);
+        NodeG(Data d, Coordinate<int> pos);
+        NodeG(Data d, Coordinate<int> pos, std::vector<NodeG*>* p);
+        NodeG(Data d, Coordinate<int> pos, NodeG* p);
         NodeG(NodeG& node);
         void setPoints(std::vector<NodeG*>* p);
         void setNext(NodeG* p);

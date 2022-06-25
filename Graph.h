@@ -8,10 +8,10 @@ class Graph {
         NodeG* graph;
     public:
         Graph();
-        Graph(int **board, Pair<int> dimensions);
+        Graph(int **board, Coordinate<int> dimensions);
         Graph(Graph& g);
         virtual ~Graph();
-        std::vector<NodeG*> neighbours(NodeG* node, int** board, Pair<int> d);
+        std::vector<NodeG*> neighbours(NodeG* node, int** board, Coordinate<int> d);
         bool inVector(NodeG* node, std::vector<NodeG*> tempS);
         void print();
 };

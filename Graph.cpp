@@ -8,17 +8,17 @@ Graph::Graph(Graph& g) {
     this->graph = g.graph;
 }
 
-Graph::Graph(int **board, Pair<int> d) {
+Graph::Graph(int **board, Coordinate<int> d) {
     std::vector<std::vector<NodeG*>> nghbSection;
     std::vector<NodeG*> isole;
     for (int i=0; i<d.x; i++) {
         for (int j=0; j<d.y; j++) {
             if (board[i][j]<0) continue;
-            NodeG* node = new NodeG(Pair<int>(i, j));
+            NodeG* node = new NodeG(Coordinate<int>(i, j));
             std::vector<NodeG*> neighb = neighbours(node, board, d);
-            if (neighb.size()<=1) isole.push_back(new NodeG(Data(1), Pair<int>(i, j)));
+            if (neighb.size()<=1) isole.push_back(new NodeG(Data(1), Coordinate<int>(i, j)));
             if (neighb.size()>=3) {
-                section.push_back(new NodeG(Data(1), Pair<int>(i, j)));
+                section.push_back(new NodeG(Data(1), Coordinate<int>(i, j)));
                 nghbSection.push_back(neighb);
             }
         }
@@ -107,10 +107,10 @@ bool Graph::inVector(NodeG* node, std::vector<NodeG*> tempS) {
     return false;
 }
 
-std::vector<NodeG*> Graph::neighbours(NodeG* node, int** board, Pair<int> d) {
-    Pair<int> pos = node->position;
-    Pair<int> nghb[4] {Pair<int>(pos.x+1, pos.y), Pair<int>(pos.x-1, pos.y),
-                       Pair<int>(pos.x, pos.y+1), Pair<int>(pos.x, pos.y-1)}; 
+std::vector<NodeG*> Graph::neighbours(NodeG* node, int** board, Coordinate<int> d) {
+    Coordinate<int> pos = node->position;
+    Coordinate<int> nghb[4] {Coordinate<int>(pos.x+1, pos.y), Coordinate<int>(pos.x-1, pos.y),
+                       Coordinate<int>(pos.x, pos.y+1), Coordinate<int>(pos.x, pos.y-1)}; 
     std::vector<NodeG*> result;
     for (int i=0; i<4; i++) {
         if (nghb[i].x < d.x && nghb[i].y < d.y && nghb[i].x >= 0 && nghb[i].y >= 0 && board[nghb[i].x][nghb[i].y]!=-1)

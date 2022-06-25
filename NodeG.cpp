@@ -8,7 +8,7 @@ NodeG::NodeG() {
     this->steps = 0;
 }
 
-NodeG::NodeG(Pair<int> pos) {
+NodeG::NodeG(Coordinate<int> pos) {
     this->position = pos;
     this->data.time = 0;
     this->points = new std::vector<NodeG*>();
@@ -17,7 +17,7 @@ NodeG::NodeG(Pair<int> pos) {
     this->steps = 0;
 }
 
-NodeG::NodeG(Pair<int> pos, NodeG* p) {
+NodeG::NodeG(Coordinate<int> pos, NodeG* p) {
     this->position = pos;
     this->points = new std::vector<NodeG*>();
     addPt(p);
@@ -26,7 +26,7 @@ NodeG::NodeG(Pair<int> pos, NodeG* p) {
     this->steps = 0;
 }
 
-NodeG::NodeG(Data d, Pair<int> pos) {
+NodeG::NodeG(Data d, Coordinate<int> pos) {
     this->data = d;
     this->position = pos;
     this->points = new std::vector<NodeG*>();
@@ -35,7 +35,7 @@ NodeG::NodeG(Data d, Pair<int> pos) {
     this->steps = 0;
 }
 
-NodeG::NodeG(Data d, Pair<int> pos, std::vector<NodeG*>* p) {
+NodeG::NodeG(Data d, Coordinate<int> pos, std::vector<NodeG*>* p) {
     this->data = d;
     this->position = pos;
     this->points = new std::vector<NodeG*>();
@@ -47,7 +47,7 @@ NodeG::NodeG(Data d, Pair<int> pos, std::vector<NodeG*>* p) {
     this->steps = 0;
 }
 
-NodeG::NodeG(Data d, Pair<int> pos, NodeG* p) {
+NodeG::NodeG(Data d, Coordinate<int> pos, NodeG* p) {
     this->data = d;
     this->position = pos;
     this->points = new std::vector<NodeG*>();

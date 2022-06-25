@@ -2,7 +2,7 @@
 
 template <class T>
 Node<T>::Node() {
-    this->data = Pair<int>();
+    this->data = Coordinate<int>();
     this->parent = nullptr;
     this->steps = 0;
 }

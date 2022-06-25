@@ -4,18 +4,18 @@
 template <class T>
 class StackFrontier {
     protected:
-        std::vector<Node<Pair<T>>*>* frontier;
+        std::vector<Node<Coordinate<T>>*>* frontier;
     public:
         StackFrontier();
         virtual ~StackFrontier();
-        virtual void add(Node<Pair<T>>* node);
+        virtual void add(Node<Coordinate<T>>* node);
         bool empty();
-        bool inFrontier(Pair<T> pair);
-        virtual void replace(Node<Pair<T>>* node);
-        Node<Pair<T>>* getNode(Node<Pair<T>>* node);
-        virtual Node<Pair<T>>* remove();
-        void del(Node<Pair<T>>* node);
-        virtual int distance(Pair<T> p);
+        bool inFrontier(Coordinate<T> Coordinate);
+        virtual void replace(Node<Coordinate<T>>* node);
+        Node<Coordinate<T>>* getNode(Node<Coordinate<T>>* node);
+        virtual Node<Coordinate<T>>* remove();
+        void del(Node<Coordinate<T>>* node);
+        virtual int distance(Coordinate<T> p);
         virtual void printHBoard();
         void print();
         void printOne();

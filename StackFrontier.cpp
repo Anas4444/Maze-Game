@@ -2,7 +2,7 @@
 
 template <class T>
 StackFrontier<T>::StackFrontier() {
-    this->frontier = new std::vector<Node<Pair<T>>*>();
+    this->frontier = new std::vector<Node<Coordinate<T>>*>();
 }
 
 template <class T>
@@ -17,19 +17,19 @@ bool StackFrontier<T>::empty() {
 }
 
 template <class T>
-void StackFrontier<T>::add(Node<Pair<T>>* node) {
+void StackFrontier<T>::add(Node<Coordinate<T>>* node) {
     frontier->push_back(node);
 }
 
 template <class T>
-Node<Pair<T>>* StackFrontier<T>::remove() {
-    Node<Pair<T>>* p = new Node<Pair<T>>(*(frontier->at(frontier->size()-1)));
+Node<Coordinate<T>>* StackFrontier<T>::remove() {
+    Node<Coordinate<T>>* p = new Node<Coordinate<T>>(*(frontier->at(frontier->size()-1)));
     frontier->erase(frontier->end()-1);
     return p;
 }
 
 template <class T>
-void StackFrontier<T>::del(Node<Pair<T>>* node) {
+void StackFrontier<T>::del(Node<Coordinate<T>>* node) {
     for (int i=0; i<frontier->size(); i++) {
         if (node->getData()==frontier->at(i)->getData()) {
             frontier->erase(frontier->begin()+i);
@@ -39,20 +39,20 @@ void StackFrontier<T>::del(Node<Pair<T>>* node) {
 }
 
 template <class T>
-void StackFrontier<T>::replace(Node<Pair<T>>* node) {
+void StackFrontier<T>::replace(Node<Coordinate<T>>* node) {
     del(node);
     this->frontier->push_back(node);
 }
 
 template <class T>
-Node<Pair<T>>* StackFrontier<T>::getNode(Node<Pair<T>>* node) {
+Node<Coordinate<T>>* StackFrontier<T>::getNode(Node<Coordinate<T>>* node) {
     for (int i=0; i<this->frontier->size(); i++) {
         if (this->frontier->at(i)->getData()==node->getData()) return this->frontier->at(i);
     }
 }
 
 template <class T>
-bool StackFrontier<T>::inFrontier(Pair<T> p) {
+bool StackFrontier<T>::inFrontier(Coordinate<T> p) {
     for (int i=0; i<this->frontier->size(); i++) {
         if (p==this->frontier->at(i)->getData()) return true;
     }
@@ -60,7 +60,7 @@ bool StackFrontier<T>::inFrontier(Pair<T> p) {
 }
 
 template <class T>
-int StackFrontier<T>::distance(Pair<T> p) { return 0; }
+int StackFrontier<T>::distance(Coordinate<T> p) { return 0; }
 
 template <class T>
 void StackFrontier<T>::printHBoard() {}
