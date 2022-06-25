@@ -191,11 +191,18 @@ int AI::roadType(Coordinate<int> road)
     int n = neigh.size();
     if (n>2) return n+4;
     if (n<=1) return n;
-    if (road.y-neigh[0].y==0 && road.x-neigh[1].x==0) {
-        if (neigh[0].y-neigh[1].y>0) return 2;
-        else return 3;
+    if (road.x==neigh[1].x && road.y==neigh[0].y) {
+        if (road.x<neigh[0].x && road.y<neigh[1].y) return 2;
+        if (road.x<neigh[0].x && road.y>neigh[1].y) return 3;
+        if (road.x>neigh[0].x && road.y>neigh[1].y) return 4;
+        if (road.x>neigh[0].x && road.y<neigh[1].y) return 5;
     }
-    if (road.y-neigh[0].y==0 && road.x-neigh[1].x==0 || road.x-neigh[0].x==0 && road.y-neigh[1].y==0) return 2;
+    if (road.x==neigh[0].x && road.y==neigh[1].y) {
+        if (road.x<neigh[1].x && road.y<neigh[0].y) return 2;
+        if (road.x<neigh[1].x && road.y>neigh[0].y) return 3;
+        if (road.x>neigh[1].x && road.y>neigh[0].y) return 4;
+        if (road.x>neigh[1].x && road.y<neigh[0].y) return 5;
+    }
     return 1;
 }
 
