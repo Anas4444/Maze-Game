@@ -186,24 +186,59 @@ void AI::zero(Node<Coordinate<int>>* node) {
 
 int AI::roadType(Coordinate<int> road)
 {
-    if (AI::blocks[road.y][road.x]==-1) return 9;
+    if (AI::blocks[road.y][road.x]==-1) return -1;
     std::vector<Coordinate<int>> neigh = AI::neighbours4(road);  
     int n = neigh.size();
-    if (n>2) return n+4;
-    if (n<=1) return n;
-    if (road.x==neigh[1].x && road.y==neigh[0].y) {
-        if (road.x<neigh[0].x && road.y<neigh[1].y) return 2;
-        if (road.x<neigh[0].x && road.y>neigh[1].y) return 3;
-        if (road.x>neigh[0].x && road.y>neigh[1].y) return 4;
-        if (road.x>neigh[0].x && road.y<neigh[1].y) return 5;
+    if (n==4) return 11;
+    if (n==0) return 0;
+    if (n==3) {
+        if (road.x==neigh[0].x && road.x==neigh[1].x || road.x!=neigh[0].x && road.x!=neigh[1].x) {
+            if (road.x==neigh[2].x) {
+                if (road.y<neigh[2].y) return 7;
+                else return 9;
+            }
+            else {
+                if (road.x<neigh[2].x) return 8;
+                else return 10;
+            }
+        }
+        else if (road.x==neigh[0].x && road.x!=neigh[1].x && road.x!=neigh[2].x || road.x!=neigh[0].x && road.x==neigh[1].x && road.x==neigh[2].x) {
+            if (road.x==neigh[0].x) {
+                if (road.y<neigh[0].y) return 7;
+                else return 9;
+            }
+            else {
+                if (road.x<neigh[0].x) return 8;
+                else return 10;
+            }
+        }
+        else {
+            if (road.x==neigh[1].x) {
+                if (road.y<neigh[1].y) return 7;
+                else return 9;
+            }
+            else {
+                if (road.x<neigh[1].x) return 8;
+                else return 10;
+            }
+        }
     }
-    if (road.x==neigh[0].x && road.y==neigh[1].y) {
-        if (road.x<neigh[1].x && road.y<neigh[0].y) return 2;
-        if (road.x<neigh[1].x && road.y>neigh[0].y) return 3;
-        if (road.x>neigh[1].x && road.y>neigh[0].y) return 4;
-        if (road.x>neigh[1].x && road.y<neigh[0].y) return 5;
+    if (n==2) {
+        if (road.x==neigh[1].x && road.y==neigh[0].y) {
+            if (road.x<neigh[0].x && road.y<neigh[1].y) return 3;
+            if (road.x<neigh[0].x && road.y>neigh[1].y) return 4;
+            if (road.x>neigh[0].x && road.y>neigh[1].y) return 5;
+            if (road.x>neigh[0].x && road.y<neigh[1].y) return 6;
+        }
+        if (road.x==neigh[0].x && road.y==neigh[1].y) {
+            if (road.x<neigh[1].x && road.y<neigh[0].y) return 3;
+            if (road.x<neigh[1].x && road.y>neigh[0].y) return 4;
+            if (road.x>neigh[1].x && road.y>neigh[0].y) return 5;
+            if (road.x>neigh[1].x && road.y<neigh[0].y) return 6;
+        }
     }
-    return 1;
+    if (road.x==neigh[0].x) return 1;
+    else return 2;
 }
 
 void AI::drawPath(int alpha=1) {
