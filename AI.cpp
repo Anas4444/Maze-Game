@@ -223,19 +223,17 @@ int AI::roadType(Coordinate<int> road)
             }
         }
     }
-    if (n==2) {
-        if (road.x==neigh[1].x && road.y==neigh[0].y) {
-            if (road.x<neigh[0].x && road.y<neigh[1].y) return 3;
-            if (road.x<neigh[0].x && road.y>neigh[1].y) return 4;
-            if (road.x>neigh[0].x && road.y>neigh[1].y) return 5;
-            if (road.x>neigh[0].x && road.y<neigh[1].y) return 6;
-        }
-        if (road.x==neigh[0].x && road.y==neigh[1].y) {
-            if (road.x<neigh[1].x && road.y<neigh[0].y) return 3;
-            if (road.x<neigh[1].x && road.y>neigh[0].y) return 4;
-            if (road.x>neigh[1].x && road.y>neigh[0].y) return 5;
-            if (road.x>neigh[1].x && road.y<neigh[0].y) return 6;
-        }
+    if (road.x==neigh[1].x && road.y==neigh[0].y) {
+        if (road.x<neigh[0].x && road.y<neigh[1].y) return 3;
+        if (road.x<neigh[0].x && road.y>neigh[1].y) return 4;
+        if (road.x>neigh[0].x && road.y>neigh[1].y) return 5;
+        if (road.x>neigh[0].x && road.y<neigh[1].y) return 6;
+    }
+    if (road.x==neigh[0].x && road.y==neigh[1].y) {
+        if (road.x<neigh[1].x && road.y<neigh[0].y) return 3;
+        if (road.x<neigh[1].x && road.y>neigh[0].y) return 4;
+        if (road.x>neigh[1].x && road.y>neigh[0].y) return 5;
+        if (road.x>neigh[1].x && road.y<neigh[0].y) return 6;
     }
     if (road.x==neigh[0].x) return 1;
     else return 2;
@@ -383,7 +381,7 @@ std::vector<Coordinate<int>> AI::neighbours4(Coordinate<int> loc) {
 
 bool AI::hasPath() {
     this->clearPathFinding();
-    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions);
+    this->initFrontier();
     std::vector<Node<Coordinate<int>>*> path;
     //this->frontier->printHBoard();
     Node<Coordinate<int>>* node = new Node<Coordinate<int>>(this->position);
@@ -415,7 +413,7 @@ bool AI::hasPath() {
 void AI::shortestPath() {
     this->clearPathFinding();
     this->weight = 1;
-    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions);
+    this->initFrontier();
     std::vector<Node<Coordinate<int>>*> path;
     this->frontier->printHBoard();
     Node<Coordinate<int>>* node = new Node<Coordinate<int>>(this->position);
@@ -455,7 +453,7 @@ void AI::alphaShortestPath(int w = 0) {
     this->clearPathFinding();
     this->weight = w;
     std::vector<Node<Coordinate<int>>*> allNodes;
-    this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions);
+    this->initFrontier();
     this->frontier->printHBoard();
     Node<Coordinate<int>>* node = new Node<Coordinate<int>>(this->position);
     this->frontier->add(node);
@@ -554,5 +552,23 @@ void AI::multiSearch() {
             bot->position = newPos;
             bot->allSearch.push_back(newPos);
         }
+    }
+}
+
+void AI::initFrontier()
+{
+    switch(AI::frontierType) {
+        case 0:
+            this->frontier = new StackFrontier<int>();
+            break;
+        case 1:
+            this->frontier = new QueueFrontier<int>();
+            break;
+        case 2:
+            this->frontier = new GreedyFrontier<int>(&this->destination, AI::dimensions);
+            break;
+        default:
+            this->frontier = new AStarFrontier<int>(&this->destination, AI::dimensions);
+
     }
 }

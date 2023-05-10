@@ -9,6 +9,7 @@ class AI {
         static std::vector<std::string> text;
         static int** blocks;
         static Coordinate<int> dimensions;
+        static int frontierType;
 
     private:
         int weight = 0;
@@ -39,6 +40,7 @@ class AI {
         static bool allChecked();
         static void multiSearch();
 
+        void initFrontier();
         void setPosition(Coordinate<int> pos);
         void setDestination(Coordinate<int> dest);
         void clearPathFinding();

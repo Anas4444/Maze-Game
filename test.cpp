@@ -7,15 +7,9 @@ std::vector<std::string> AI::text = AI::fillText(path);
 std::vector<AI*> AI::bots;
 Coordinate<int> AI::dimensions = AI::fillDimensions();
 int** AI::blocks = AI::fillBlocks();
+int AI::frontierType = 3;
 
 int main() {
-    std::cout << AI::dimensions.x << " " << AI::dimensions.y << std::endl;
-    for (int i=0; i<AI::dimensions.y; i++) {
-        for (int j=0; j<AI::dimensions.x; j++) {
-            std::cout << AI::roadType(Coordinate<int>(j, i));
-        }
-        std::cout << "\n";
-    }
     AI* m = new AI(Coordinate<int>(1, 0), Coordinate<int>(8, 3));
     AI* m1 = new AI(Coordinate<int>(3, 1));
     AI* m2 = new AI(Coordinate<int>(3, 3));
@@ -28,12 +22,12 @@ int main() {
     AI::explore();
     m->clearSearch();*/
 
-    /*m->shortestPath();
+    m->shortestPath();
     m->showAll();
     m->alphaShortestPath(4);
     m->showAll();
     m->clearPathFinding();
-    AI::zero();*/
+    AI::zero();
 
     /*m->search();
     AI::explore();
