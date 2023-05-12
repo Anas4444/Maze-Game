@@ -1,2 +1,2 @@
-# PathSearch
-PathSearch Project is a C++ library with algorithms for breadth-first search, depth-first search, greedy search, and A* search. It also includes additional algorithms for searching multiple paths to the same destination, as well as other useful functionalities.
+# Maze-Game
+The Maze Game boasts an AI agent that utilizes path finding algorithms to navigate through the maze, whether it be determining the shortest path to a destination or tracking down an enemy. Maze generation is based on a text file that is dynamically converted into 3D objects at the start of each game.
